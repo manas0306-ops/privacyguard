@@ -1,26 +1,33 @@
 import React from 'react';
 import mandalaWatermark from '../assets/mandala-watermark.png';
+import { usePrivacy } from '../context/PrivacyContext';
 
 export const WatermarkLayer: React.FC = () => {
+  const { currentTheme } = usePrivacy();
+  const isBurgundy = currentTheme === 'burgundy';
+
   return (
     <div
       aria-hidden="true"
-      className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none transition-all duration-700"
     >
-      {/* Ambient radial gold warmth in center */}
+      {/* Ambient radial glow in center */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 transition-all duration-700"
         style={{
-          background:
-            'radial-gradient(circle at 50% 45%, rgba(245, 158, 11, 0.04) 0%, rgba(180, 83, 9, 0.015) 35%, transparent 70%)',
+          background: isBurgundy
+            ? 'radial-gradient(circle at 50% 40%, rgba(155, 36, 59, 0.14) 0%, rgba(84, 21, 21, 0.06) 45%, transparent 80%)'
+            : 'radial-gradient(circle at 50% 45%, rgba(6, 182, 212, 0.07) 0%, rgba(37, 99, 235, 0.02) 35%, transparent 70%)',
         }}
       />
 
-      {/* Ambient radial amber accent in top-right */}
+      {/* Ambient radial accent in top-right */}
       <div
-        className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full"
+        className="absolute -top-32 -right-32 w-[650px] h-[650px] rounded-full transition-all duration-700"
         style={{
-          background: 'radial-gradient(circle, rgba(251, 191, 36, 0.035) 0%, transparent 65%)',
+          background: isBurgundy
+            ? 'radial-gradient(circle, rgba(237, 224, 203, 0.05) 0%, transparent 65%)'
+            : 'radial-gradient(circle, rgba(56, 189, 248, 0.04) 0%, transparent 65%)',
         }}
       />
 
@@ -29,7 +36,11 @@ export const WatermarkLayer: React.FC = () => {
         <img
           src={mandalaWatermark}
           alt=""
-          className="w-[780px] h-[780px] sm:w-[1000px] sm:h-[1000px] max-w-none opacity-[0.06] animate-spin-very-slow transform-gpu drop-shadow-[0_0_25px_rgba(245,158,11,0.25)]"
+          className={`w-[780px] h-[780px] sm:w-[1000px] sm:h-[1000px] max-w-none animate-spin-very-slow transform-gpu transition-opacity duration-700 ${
+            isBurgundy
+              ? 'opacity-[0.065] drop-shadow-[0_0_30px_rgba(245,158,11,0.3)]'
+              : 'opacity-[0.045] drop-shadow-[0_0_25px_rgba(6,182,212,0.2)]'
+          }`}
         />
       </div>
 
@@ -38,7 +49,9 @@ export const WatermarkLayer: React.FC = () => {
         <img
           src={mandalaWatermark}
           alt=""
-          className="w-[520px] h-[520px] max-w-none opacity-[0.035] animate-spin-reverse-slow transform-gpu"
+          className={`w-[520px] h-[520px] max-w-none animate-spin-reverse-slow transform-gpu transition-opacity duration-700 ${
+            isBurgundy ? 'opacity-[0.04]' : 'opacity-[0.03]'
+          }`}
         />
       </div>
     </div>

@@ -18,7 +18,8 @@ import { usePrivacy } from './context/PrivacyContext';
 import { Shield } from 'lucide-react';
 
 export const AppContent: React.FC = () => {
-  const { activeTab } = usePrivacy();
+  const { activeTab, currentTheme } = usePrivacy();
+  const isBurgundy = currentTheme === 'burgundy';
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -40,7 +41,11 @@ export const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#070b14] text-slate-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
+    <div className={`relative min-h-screen ${
+      isBurgundy
+        ? 'bg-[#120307] text-[#faf4e8] selection:bg-burgundy-600/40 selection:text-cream-100'
+        : 'bg-[#070b14] text-slate-100 selection:bg-amber-500/30 selection:text-amber-200'
+    } flex flex-col font-sans transition-colors duration-300`}>
       {/* Background Sacred Geometry Mandala Watermark & Ambient Gold Glow */}
       <WatermarkLayer />
 
@@ -62,18 +67,22 @@ export const AppContent: React.FC = () => {
       <VoiceAssistantBar />
 
       {/* Footer */}
-      <footer className="relative z-10 w-full border-t border-slate-800/80 bg-slate-950/70 backdrop-blur-md py-6 text-xs text-slate-500">
+      <footer className={`relative z-10 w-full border-t ${
+        isBurgundy
+          ? 'border-cream-300/10 bg-[#16040a]/80 text-cream-300/60'
+          : 'border-slate-800/80 bg-slate-950/70 text-slate-500'
+      } backdrop-blur-md py-6 text-xs transition-colors duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-amber-400" />
-            <span className="font-semibold text-slate-300">PRIVACYGUARD</span>
+            <Shield className={`w-4 h-4 ${isBurgundy ? 'text-cream-300' : 'text-amber-400'}`} />
+            <span className={`font-semibold ${isBurgundy ? 'text-cream-200' : 'text-slate-300'}`}>PRIVACYGUARD</span>
             <span>—</span>
-            <span className="text-slate-400 italic">"Privacy is not a checkbox. It is a continuous control system."</span>
+            <span className={`${isBurgundy ? 'text-cream-300/80' : 'text-slate-400'} italic`}>"Privacy is not a checkbox. It is a continuous control system."</span>
           </div>
-          <div className="flex items-center gap-4 font-mono text-[11px] text-slate-400">
+          <div className={`flex items-center gap-4 font-mono text-[11px] ${isBurgundy ? 'text-cream-300/70' : 'text-slate-400'}`}>
             <span>Cybersecurity &amp; Privacy-Preserving Technology</span>
             <span>•</span>
-            <span className="text-amber-400 font-semibold">Firewall MVP</span>
+            <span className={`${isBurgundy ? 'text-cream-200' : 'text-amber-400'} font-semibold`}>Firewall MVP</span>
           </div>
         </div>
       </footer>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
 import {
   DataAsset,
   ConsentRecord,
@@ -60,6 +60,8 @@ interface PrivacyContextType {
   setIsCopilotOpen: (open: boolean) => void;
   isLandingModalOpen: boolean;
   setIsLandingModalOpen: (open: boolean) => void;
+  currentTheme: 'burgundy' | 'blue';
+  toggleTheme: () => void;
 }
 
 const PrivacyContext = createContext<PrivacyContextType | undefined>(undefined);
@@ -86,6 +88,32 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     return true;
   });
+
+  // Active UI Theme: defaults to 'burgundy' (Maroon, Burgundy & Cream) with instant toggle to 'blue'
+  const [currentTheme, setCurrentTheme] = useState<'burgundy' | 'blue'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('privacyguard_theme');
+      if (saved === 'blue' || saved === 'burgundy') return saved;
+    }
+    return 'burgundy';
+  });
+
+  const toggleTheme = useCallback(() => {
+    setCurrentTheme(prev => {
+      const next = prev === 'burgundy' ? 'blue' : 'burgundy';
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('privacyguard_theme', next);
+        document.body.setAttribute('data-theme', next);
+      }
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.body.setAttribute('data-theme', currentTheme);
+    }
+  }, [currentTheme]);
 
   // Derive blocked requests count
   const blockedCount = useMemo(() => {
@@ -411,7 +439,9 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isCopilotOpen,
         setIsCopilotOpen,
         isLandingModalOpen,
-        setIsLandingModalOpen
+        setIsLandingModalOpen,
+        currentTheme,
+        toggleTheme
       }}
     >
       {children}
