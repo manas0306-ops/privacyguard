@@ -53,17 +53,22 @@ export default {
           950: '#2c0808',
         },
         cream: {
-          50: '#fffdfa',
-          100: '#fdfbf7',
-          200: '#faf4e8',
-          300: '#f5ebd7',
-          400: '#ede0cb',
-          500: '#dfccae',
-          600: '#c5ae8c',
-          700: '#a68e6d',
-          800: '#877254',
-          900: '#6f5e46',
-          950: '#3c3224',
+          50: '#fffdf8',
+          100: '#fffbf2',
+          200: '#fff8e7', // Cosmic Latte
+          300: '#faedd0',
+          400: '#f5e3ba',
+          500: '#ebd19a',
+          600: '#d4b377',
+          700: '#b08f57',
+          800: '#8c7042',
+          900: '#6e5633',
+          950: '#3d2e18',
+        },
+        cosmic: {
+          DEFAULT: '#fff8e7',
+          light: '#fffbf2',
+          dark: '#faedd0',
         }
       },
       fontFamily: {

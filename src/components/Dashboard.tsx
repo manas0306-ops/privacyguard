@@ -30,9 +30,11 @@ export const Dashboard: React.FC = () => {
     setIsScoreModalOpen,
     setIsErasureModalOpen,
     deleteDataAsset,
-    setInspectingAsset
+    setInspectingAsset,
+    currentTheme
   } = usePrivacy();
 
+  const isBurgundy = currentTheme !== 'blue';
   const activeConsentsCount = consents.filter(c => c.status === 'ACTIVE').length;
   const totalConsentsCount = consents.length;
   const categoriesCount = dataAssets.length;
@@ -50,11 +52,17 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6">
       {/* Top Welcome & Mission Banner */}
       <div className="relative overflow-hidden rounded-2xl glass-panel p-6 sm:p-8 border border-slate-700/60 shadow-xl">
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+        <div className={`absolute top-0 right-0 -mr-16 -mt-16 w-72 h-72 rounded-full blur-3xl pointer-events-none transition-all duration-500 ${
+          isBurgundy ? 'bg-gradient-to-br from-red-600/35 via-rose-600/20 to-transparent' : 'bg-cyan-500/10'
+        }`} />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono transition-all ${
+              isBurgundy
+                ? 'bg-red-950/90 border border-red-500/50 text-[#fff8e7] shadow-[0_0_12px_rgba(220,38,38,0.3)]'
+                : 'bg-cyan-950/70 border border-cyan-500/30 text-cyan-300'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${isBurgundy ? 'bg-red-400' : 'bg-cyan-400'} animate-pulse`} />
               CYBERSECURITY &amp; PRIVACY FIREWALL ACTIVE
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
@@ -69,7 +77,11 @@ export const Dashboard: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => setActiveTab('simulator')}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-medium text-sm shadow-glow-sm transition-all cursor-pointer"
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all cursor-pointer shadow-lg ${
+                isBurgundy
+                  ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-[#fff8e7] border border-red-400/40 shadow-[0_0_20px_rgba(220,38,38,0.35)]'
+                  : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-glow-sm'
+              }`}
             >
               <Radio className="w-4 h-4" />
               <span>Launch Simulator</span>
@@ -129,22 +141,24 @@ export const Dashboard: React.FC = () => {
         {/* Metric 1: Privacy Score */}
         <div
           onClick={() => setIsScoreModalOpen(true)}
-          className="col-span-2 sm:col-span-1 glass-panel p-4 rounded-xl border border-slate-700/60 hover:border-cyan-500/40 transition-all cursor-pointer group relative overflow-hidden"
+          className={`col-span-2 sm:col-span-1 glass-panel p-4 rounded-xl border border-slate-700/60 transition-all cursor-pointer group relative overflow-hidden ${
+            isBurgundy ? 'hover:border-red-500/50' : 'hover:border-cyan-500/40'
+          }`}
         >
           <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
             <span className="font-mono uppercase tracking-wider text-[11px]">Privacy Score</span>
-            <ShieldCheck className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+            <ShieldCheck className={`w-4 h-4 transition-transform group-hover:scale-110 ${isBurgundy ? 'text-[#fff8e7]' : 'text-cyan-400'}`} />
           </div>
           <div className="flex items-baseline gap-1">
             <span className={`text-3xl font-extrabold font-mono ${
               scoreBreakdown.score >= 85 ? 'text-emerald-400' :
-              scoreBreakdown.score >= 70 ? 'text-amber-400' : 'text-rose-400'
+              scoreBreakdown.score >= 70 ? (isBurgundy ? 'text-[#fff8e7]' : 'text-amber-400') : 'text-rose-400'
             }`}>
               {scoreBreakdown.score}
             </span>
             <span className="text-xs text-slate-500 font-mono">/100</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1 group-hover:text-cyan-300">
+          <p className={`text-[11px] text-slate-400 mt-1 flex items-center gap-1 ${isBurgundy ? 'group-hover:text-[#fff8e7]' : 'group-hover:text-cyan-300'}`}>
             <span>Why this score?</span>
             <ArrowRight className="w-3 h-3" />
           </p>
@@ -153,11 +167,13 @@ export const Dashboard: React.FC = () => {
         {/* Metric 2: Active Consents */}
         <div
           onClick={() => setActiveTab('consent')}
-          className="glass-panel p-4 rounded-xl border border-slate-700/60 hover:border-blue-500/40 transition-all cursor-pointer group"
+          className={`glass-panel p-4 rounded-xl border border-slate-700/60 transition-all cursor-pointer group ${
+            isBurgundy ? 'hover:border-red-500/50' : 'hover:border-blue-500/40'
+          }`}
         >
           <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
             <span className="font-mono uppercase tracking-wider text-[11px]">Active Consents</span>
-            <Sliders className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
+            <Sliders className={`w-4 h-4 transition-transform group-hover:scale-110 ${isBurgundy ? 'text-red-400' : 'text-blue-400'}`} />
           </div>
           <div className="flex items-baseline gap-1">
             <span className="text-3xl font-extrabold font-mono text-white">
@@ -171,11 +187,13 @@ export const Dashboard: React.FC = () => {
         {/* Metric 3: Data Categories */}
         <div
           onClick={() => setActiveTab('inventory')}
-          className="glass-panel p-4 rounded-xl border border-slate-700/60 hover:border-indigo-500/40 transition-all cursor-pointer group"
+          className={`glass-panel p-4 rounded-xl border border-slate-700/60 transition-all cursor-pointer group ${
+            isBurgundy ? 'hover:border-red-500/50' : 'hover:border-indigo-500/40'
+          }`}
         >
           <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
             <span className="font-mono uppercase tracking-wider text-[11px]">Data Categories</span>
-            <Database className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+            <Database className={`w-4 h-4 transition-transform group-hover:scale-110 ${isBurgundy ? 'text-[#fff8e7]' : 'text-indigo-400'}`} />
           </div>
           <div className="text-3xl font-extrabold font-mono text-white">
             {categoriesCount}
@@ -186,11 +204,13 @@ export const Dashboard: React.FC = () => {
         {/* Metric 4: Third Parties */}
         <div
           onClick={() => setActiveTab('flow')}
-          className="glass-panel p-4 rounded-xl border border-slate-700/60 hover:border-purple-500/40 transition-all cursor-pointer group"
+          className={`glass-panel p-4 rounded-xl border border-slate-700/60 transition-all cursor-pointer group ${
+            isBurgundy ? 'hover:border-red-500/50' : 'hover:border-purple-500/40'
+          }`}
         >
           <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
             <span className="font-mono uppercase tracking-wider text-[11px]">Third Parties</span>
-            <Globe className="w-4 h-4 text-purple-400 group-hover:scale-110 transition-transform" />
+            <Globe className={`w-4 h-4 transition-transform group-hover:scale-110 ${isBurgundy ? 'text-red-400' : 'text-purple-400'}`} />
           </div>
           <div className="text-3xl font-extrabold font-mono text-white">
             {thirdPartiesCount}
@@ -242,7 +262,9 @@ export const Dashboard: React.FC = () => {
             </div>
             <button
               onClick={() => setActiveTab('audit')}
-              className="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 cursor-pointer"
+              className={`text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors ${
+                isBurgundy ? 'text-[#fff8e7] hover:text-red-300' : 'text-cyan-400 hover:text-cyan-300'
+              }`}
             >
               <span>View Full Audit Log</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -260,7 +282,7 @@ export const Dashboard: React.FC = () => {
                     event.decision === 'ALLOW' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/30' :
                     event.decision === 'ALLOW_MINIMUM' ? 'bg-amber-950/80 text-amber-300 border border-amber-500/30' :
                     event.decision === 'BLOCK' ? 'bg-rose-950/80 text-rose-300 border border-rose-500/30' :
-                    'bg-cyan-950/80 text-cyan-300 border border-cyan-500/30'
+                    isBurgundy ? 'bg-red-950/80 text-[#fff8e7] border border-red-500/30' : 'bg-cyan-950/80 text-cyan-300 border border-cyan-500/30'
                   }`}>
                     {event.decision === 'ALLOW_MINIMUM' ? 'MINIMIZED' : event.decision}
                   </span>
@@ -287,12 +309,14 @@ export const Dashboard: React.FC = () => {
 
           <div className="pt-2 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/60">
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-cyan-400" />
+              <ShieldCheck className={`w-4 h-4 ${isBurgundy ? 'text-[#fff8e7]' : 'text-cyan-400'}`} />
               Continuous GDPR Article 5 &amp; 6 enforcement active
             </span>
             <button
               onClick={() => setActiveTab('simulator')}
-              className="text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
+              className={`font-semibold cursor-pointer transition-colors ${
+                isBurgundy ? 'text-[#fff8e7] hover:text-red-300' : 'text-cyan-400 hover:text-cyan-300'
+              }`}
             >
               Test Scenarios →
             </button>
@@ -303,7 +327,7 @@ export const Dashboard: React.FC = () => {
         <div className="glass-panel p-6 rounded-2xl border border-slate-700/60 space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-4 h-4 text-cyan-400" />
+              <TrendingUp className={`w-4 h-4 ${isBurgundy ? 'text-red-400' : 'text-cyan-400'}`} />
               <h2 className="text-base font-bold text-white">
                 Privacy Posture Impact
               </h2>

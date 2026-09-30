@@ -16,7 +16,7 @@ export const WatermarkLayer: React.FC = () => {
         className="absolute inset-0 transition-all duration-700"
         style={{
           background: isBurgundy
-            ? 'radial-gradient(circle at 50% 40%, rgba(155, 36, 59, 0.14) 0%, rgba(84, 21, 21, 0.06) 45%, transparent 80%)'
+            ? 'radial-gradient(circle at 50% 35%, rgba(220, 38, 38, 0.22) 0%, rgba(155, 28, 48, 0.12) 42%, rgba(70, 10, 20, 0.05) 70%, transparent 85%)'
             : 'radial-gradient(circle at 50% 45%, rgba(6, 182, 212, 0.07) 0%, rgba(37, 99, 235, 0.02) 35%, transparent 70%)',
         }}
       />
@@ -26,7 +26,7 @@ export const WatermarkLayer: React.FC = () => {
         className="absolute -top-32 -right-32 w-[650px] h-[650px] rounded-full transition-all duration-700"
         style={{
           background: isBurgundy
-            ? 'radial-gradient(circle, rgba(237, 224, 203, 0.05) 0%, transparent 65%)'
+            ? 'radial-gradient(circle, rgba(255, 248, 231, 0.08) 0%, rgba(220, 38, 38, 0.05) 45%, transparent 70%)'
             : 'radial-gradient(circle, rgba(56, 189, 248, 0.04) 0%, transparent 65%)',
         }}
       />
@@ -38,7 +38,7 @@ export const WatermarkLayer: React.FC = () => {
           alt=""
           className={`w-[780px] h-[780px] sm:w-[1000px] sm:h-[1000px] max-w-none animate-spin-very-slow transform-gpu transition-opacity duration-700 ${
             isBurgundy
-              ? 'opacity-[0.065] drop-shadow-[0_0_30px_rgba(245,158,11,0.3)]'
+              ? 'opacity-[0.07] drop-shadow-[0_0_35px_rgba(255,248,231,0.35)]'
               : 'opacity-[0.045] drop-shadow-[0_0_25px_rgba(6,182,212,0.2)]'
           }`}
         />
