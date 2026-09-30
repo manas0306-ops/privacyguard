@@ -3,6 +3,7 @@ import {
   FileText,
   Search,
   Download,
+  FileDown,
   Printer,
   Filter,
   CheckCircle2,
@@ -14,6 +15,8 @@ import {
   Lock,
   Share2
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { usePrivacy } from '../context/PrivacyContext';
 import { AuditEvent, AuditDecisionType } from '../types/privacy';
 
@@ -98,6 +101,128 @@ export const AuditLog: React.FC = () => {
     return true;
   });
 
+  /**
+   * Direct PDF Download Function
+   * Generates a real .pdf binary file and downloads it directly to the user's Downloads folder
+   */
+  const downloadAsPDF = () => {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4'
+    });
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    // 1. Header Banner
+    doc.setFillColor(11, 17, 32); // Dark Navy background
+    doc.rect(0, 0, 595.28, 85, 'F');
+
+    doc.setTextColor(2, 132, 199); // Cyan
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PRIVACYGUARD', 36, 36);
+
+    doc.setTextColor(241, 245, 249); // White
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text('PERSONAL DATA FIREWALL — VERIFIABLE AUDIT COMPLIANCE REPORT', 36, 52);
+
+    doc.setTextColor(148, 163, 184); // Slate
+    doc.setFontSize(8);
+    doc.text(`Generated: ${dateStr} ${timeStr}  |  ISO/IEC 27701 & GDPR Article 30 Compliant  |  Ref: PG-AUD-${Date.now().toString(36).toUpperCase()}`, 36, 68);
+
+    // 2. Summary Statistics Box
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(36, 100, 523, 46, 4, 4, 'FD');
+
+    const totalEvents = auditLogs.length;
+    const blockedCount = auditLogs.filter(a => a.decision === 'BLOCK').length;
+    const minimizedCount = auditLogs.filter(a => a.decision === 'ALLOW_MINIMUM').length;
+    const allowedCount = auditLogs.filter(a => a.decision === 'ALLOW').length;
+
+    const colWidth = 523 / 4;
+    const stats = [
+      { label: 'TOTAL EVENTS EVALUATED', value: `${totalEvents}`, color: [15, 23, 42] },
+      { label: 'SURVEILLANCE BLOCKED', value: `${blockedCount}`, color: [220, 38, 38] },
+      { label: 'OVERCOLLECTION MINIMIZED', value: `${minimizedCount}`, color: [217, 119, 6] },
+      { label: 'AUTHORIZED DISPATCHES', value: `${allowedCount}`, color: [22, 163, 74] }
+    ];
+
+    stats.forEach((s, idx) => {
+      const x = 36 + (idx * colWidth);
+      doc.setTextColor(s.color[0], s.color[1], s.color[2]);
+      doc.setFontSize(15);
+      doc.setFont('helvetica', 'bold');
+      doc.text(s.value, x + colWidth / 2, 122, { align: 'center' });
+
+      doc.setTextColor(100, 116, 139);
+      doc.setFontSize(6.5);
+      doc.setFont('helvetica', 'normal');
+      doc.text(s.label, x + colWidth / 2, 136, { align: 'center' });
+    });
+
+    // 3. Table of Events
+    const tableData = auditLogs.map(log => [
+      log.timeFormatted || log.timestamp.slice(11, 19),
+      log.actor,
+      log.data.join(', '),
+      log.purpose,
+      log.decision === 'ALLOW_MINIMUM' ? 'MINIMIZED' : log.decision,
+      log.reason
+    ]);
+
+    autoTable(doc, {
+      startY: 160,
+      head: [['Time', 'Actor / Endpoint', 'Requested Data', 'Purpose', 'Verdict', 'Firewall Policy & Legal Rationale']],
+      body: tableData,
+      theme: 'grid',
+      styles: {
+        fontSize: 7.5,
+        cellPadding: 5,
+        overflow: 'linebreak'
+      },
+      headStyles: {
+        fillColor: [15, 23, 42],
+        textColor: [248, 250, 252],
+        fontStyle: 'bold',
+        fontSize: 7.5
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252]
+      },
+      columnStyles: {
+        0: { cellWidth: 50 },
+        1: { cellWidth: 80, fontStyle: 'bold' },
+        2: { cellWidth: 95 },
+        3: { cellWidth: 60 },
+        4: { cellWidth: 60, fontStyle: 'bold' },
+        5: { cellWidth: 'auto' }
+      },
+      didParseCell: (data) => {
+        if (data.section === 'body' && data.column.index === 4) {
+          const val = data.cell.raw;
+          if (val === 'BLOCK') {
+            data.cell.styles.textColor = [220, 38, 38];
+          } else if (val === 'MINIMIZED') {
+            data.cell.styles.textColor = [217, 119, 6];
+          } else if (val === 'ALLOW') {
+            data.cell.styles.textColor = [22, 163, 74];
+          } else {
+            data.cell.styles.textColor = [2, 132, 199];
+          }
+        }
+      }
+    });
+
+    // 4. Save and trigger physical PDF file download
+    const filename = `PrivacyGuard_Audit_Report_${now.toISOString().slice(0, 10)}.pdf`;
+    doc.save(filename);
+  };
+
   const exportAsJSON = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(auditLogs, null, 2));
     const downloadAnchor = document.createElement('a');
@@ -106,289 +231,6 @@ export const AuditLog: React.FC = () => {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-  };
-
-  /**
-   * PDF Printable Compliance Report Generator
-   * Generates a formal, printable executive cybersecurity compliance document
-   * and opens the browser's native Save as PDF / Print dialog.
-   */
-  const exportAsPrintablePDF = () => {
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const formattedTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-    const totalEvents = auditLogs.length;
-    const blockedCount = auditLogs.filter(a => a.decision === 'BLOCK').length;
-    const minimizedCount = auditLogs.filter(a => a.decision === 'ALLOW_MINIMUM').length;
-    const allowedCount = auditLogs.filter(a => a.decision === 'ALLOW').length;
-
-    const reportHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>PrivacyGuard_Compliance_Audit_Report_${now.toISOString().slice(0, 10)}</title>
-  <style>
-    @page {
-      size: A4 portrait;
-      margin: 14mm 12mm;
-    }
-    * {
-      box-sizing: border-box;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: #0f172a;
-      background: #ffffff;
-      margin: 0;
-      padding: 0;
-      font-size: 11px;
-      line-height: 1.45;
-    }
-    .report-header {
-      border-bottom: 2px solid #0284c7;
-      padding-bottom: 14px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .brand-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: #0369a1;
-      letter-spacing: -0.5px;
-      margin: 0;
-    }
-    .brand-subtitle {
-      font-size: 11px;
-      color: #64748b;
-      margin: 2px 0 0 0;
-      font-weight: 500;
-    }
-    .report-meta {
-      text-align: right;
-      font-family: "JetBrains Mono", Consolas, monospace;
-      font-size: 10px;
-      color: #475569;
-    }
-    .security-badge {
-      display: inline-block;
-      background: #f0fdf4;
-      border: 1px solid #86efac;
-      color: #166534;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: 700;
-      font-size: 10px;
-      margin-top: 4px;
-    }
-    .summary-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-    .stat-item {
-      text-align: center;
-    }
-    .stat-num {
-      font-size: 18px;
-      font-weight: 800;
-      font-family: monospace;
-      color: #0f172a;
-    }
-    .stat-label {
-      font-size: 9px;
-      color: #64748b;
-      text-transform: uppercase;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      margin-top: 2px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th {
-      background-color: #f1f5f9;
-      color: #334155;
-      text-transform: uppercase;
-      font-family: monospace;
-      font-size: 9px;
-      letter-spacing: 0.5px;
-      padding: 7px 8px;
-      border-bottom: 2px solid #cbd5e1;
-      text-align: left;
-    }
-    td {
-      padding: 7px 8px;
-      border-bottom: 1px solid #e2e8f0;
-      vertical-align: top;
-      font-size: 10.5px;
-    }
-    tr:nth-child(even) td {
-      background-color: #fafafa;
-    }
-    .tag {
-      display: inline-block;
-      padding: 1px 4px;
-      background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      border-radius: 3px;
-      font-family: monospace;
-      font-size: 9px;
-      margin: 1px 2px 1px 0;
-    }
-    .badge {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .badge-allow { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-    .badge-min { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-    .badge-block { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-    .badge-consent { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
-    .badge-erasure { background: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
-    .badge-lockdown { background: #ffe4e6; color: #9f1239; border: 1px solid #fda4af; }
-
-    .certificate-seal {
-      border: 1px dashed #0284c7;
-      border-radius: 6px;
-      padding: 10px 14px;
-      margin-top: 14px;
-      background: #f0f9ff;
-      font-size: 9.5px;
-      color: #0369a1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .footer-note {
-      margin-top: 20px;
-      font-size: 9px;
-      color: #94a3b8;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="report-header">
-    <div>
-      <h1 class="brand-title">PRIVACYGUARD</h1>
-      <p class="brand-subtitle">Personal Data Firewall • Verifiable Compliance &amp; Audit Certificate</p>
-      <div class="security-badge">
-        ✓ ISO/IEC 27701 &amp; GDPR ARTICLE 30 VERIFIED TRAIL
-      </div>
-    </div>
-    <div class="report-meta">
-      <div><strong>Report Ref:</strong> PG-AUD-${Date.now().toString(36).toUpperCase()}</div>
-      <div><strong>Generated:</strong> ${formattedDate} ${formattedTime}</div>
-      <div><strong>System Posture:</strong> Score ${scoreBreakdown.score}/100</div>
-      <div><strong>Lockdown Posture:</strong> ${isLockdownActive ? 'ACTIVE (ENFORCED)' : 'NORMAL SHIELD'}</div>
-    </div>
-  </div>
-
-  <div class="summary-card">
-    <div class="stat-item">
-      <div class="stat-num">${totalEvents}</div>
-      <div class="stat-label">Total Events Evaluated</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" style="color: #dc2626;">${blockedCount}</div>
-      <div class="stat-label">Threats Intercepted</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" style="color: #d97706;">${minimizedCount}</div>
-      <div class="stat-label">Overcollection Filtered</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" style="color: #16a34a;">${allowedCount}</div>
-      <div class="stat-label">Authorized Dispatches</div>
-    </div>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th style="width: 14%;">Timestamp</th>
-        <th style="width: 18%;">Actor / Endpoint</th>
-        <th style="width: 22%;">Requested Data</th>
-        <th style="width: 14%;">Purpose</th>
-        <th style="width: 12%;">Verdict</th>
-        <th style="width: 20%;">Policy &amp; Legal Rationale</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${auditLogs.map(log => {
-        let badgeClass = 'badge-allow';
-        let label: string = log.decision;
-        if (log.decision === 'BLOCK') { badgeClass = 'badge-block'; }
-        else if (log.decision === 'ALLOW_MINIMUM') { badgeClass = 'badge-min'; label = 'MINIMIZED'; }
-        else if (log.decision === 'CONSENT_UPDATE' || log.decision === 'WITHDRAW') { badgeClass = 'badge-consent'; label = 'CONSENT'; }
-        else if (log.decision === 'ERASURE') { badgeClass = 'badge-erasure'; label = 'ERASURE'; }
-        else if (log.decision === 'LOCKDOWN_ON' || log.decision === 'LOCKDOWN_OFF') { badgeClass = 'badge-lockdown'; label = 'LOCKDOWN'; }
-
-        return `<tr>
-          <td style="font-family: monospace; font-size: 9.5px; color: #475569;">${log.timeFormatted || log.timestamp.slice(11, 19)}</td>
-          <td><strong>${log.actor}</strong></td>
-          <td>${log.data.map(d => `<span class="tag">${d}</span>`).join(' ')}</td>
-          <td style="font-family: monospace; color: #0284c7;">${log.purpose}</td>
-          <td><span class="badge ${badgeClass}">${label}</span></td>
-          <td style="color: #334155; font-size: 10px;">${log.reason}</td>
-        </tr>`;
-      }).join('')}
-    </tbody>
-  </table>
-
-  <div class="certificate-seal">
-    <div>
-      <strong>Cryptographic Seal:</strong> SHA-256 Digest Validated • Egress Firewall Article 5(1)(b)
-    </div>
-    <div style="font-family: monospace;">
-      STATUS: VERIFIED &amp; TAMPER-EVIDENT
-    </div>
-  </div>
-
-  <div class="footer-note">
-    <span>PrivacyGuard — Personal Data Firewall (Cybersecurity &amp; Privacy-Preserving Technology Hackathon MVP)</span>
-    <span>Page 1 of 1 • Certified Audit Log</span>
-  </div>
-
-  <script>
-    window.onload = function() {
-      setTimeout(function() {
-        window.print();
-      }, 300);
-    };
-  </script>
-</body>
-</html>`;
-
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(reportHtml);
-      printWindow.document.close();
-    } else {
-      alert("Please allow pop-ups for this site to generate the printable PDF report.");
-    }
   };
 
   return (
@@ -407,24 +249,24 @@ export const AuditLog: React.FC = () => {
           </p>
         </div>
 
-        {/* Action Buttons: Download PDF & Export JSON */}
+        {/* Action Buttons: Direct PDF Download & JSON Export */}
         <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-center shrink-0">
           <button
-            onClick={exportAsPrintablePDF}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-glow-sm text-xs font-semibold transition-all cursor-pointer"
-            title="Generate printable PDF compliance report"
+            onClick={downloadAsPDF}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white shadow-glow-sm text-xs font-bold transition-all cursor-pointer border border-cyan-400/40"
+            title="Download audit report as a genuine .PDF document"
           >
-            <Printer className="w-4 h-4" />
-            <span>Print / Save PDF Report</span>
+            <FileDown className="w-4 h-4 text-cyan-200" />
+            <span>Download PDF Report (.pdf)</span>
           </button>
 
           <button
             onClick={exportAsJSON}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-colors cursor-pointer"
             title="Download raw JSON data"
           >
-            <Download className="w-4 h-4 text-cyan-400" />
-            <span>Export JSON Audit Trail</span>
+            <Download className="w-4 h-4 text-slate-400" />
+            <span>Export JSON (.json)</span>
           </button>
         </div>
       </div>
