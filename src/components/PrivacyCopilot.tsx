@@ -22,11 +22,7 @@ import {
 } from 'lucide-react';
 import { usePrivacy } from '../context/PrivacyContext';
 import {
-  evaluateMath,
-  evaluateUnitConversion,
-  handleAppActions,
-  queryKnowledgeBase,
-  queryGemini,
+  processCopilotQuery,
   CopilotAppContext
 } from '../engine/copilotEngine';
 
@@ -65,7 +61,7 @@ export const PrivacyCopilot: React.FC = () => {
     {
       id: 'msg-0',
       sender: 'copilot',
-      text: "👋 **Hello! I'm your PrivacyGuard AI Copilot.**\n\nI am a lightweight intelligent assistant capable of:\n• **Mathematical calculations & conversions** (e.g. `calculate 450 * 12.5`, `convert 60 miles to km`)\n• **World knowledge & science** (e.g. `capital of Japan`, `who created Linux`)\n• **Cybersecurity & Privacy laws** (e.g. `explain Zero Knowledge Proofs`, `GDPR Article 17`)\n• **Drafting formal requests** (e.g. `draft an erasure request letter`)\n• **Direct firewall control** (e.g. `activate lockdown`, `my privacy score`)\n\nWhat can I assist you with today?",
+      text: "👋 **Hello! I'm your PrivacyGuard Global AI Copilot.**\n\nI can answer **any question about the world**, perform **mathematical calculations**, explain **cybersecurity & privacy**, draft legal requests, and **control this application live**:\n\n• 🌍 **World Knowledge:** *\"Who is Alan Turing?\"*, *\"Capital of Peru\"*, *\"What is quantum computing?\"*\n• 🧮 **Calculations:** *\"Calculate 15% of 850\"*, *\"Square root of 256\"*, *\"50 miles to km\"*\n• 🛡️ **Privacy Laws:** *\"Explain GDPR Article 17\"*, *\"What is Zero Knowledge Proof?\"*\n• 🚨 **Firewall Actions:** *\"Activate Privacy Lockdown\"*, *\"What is my privacy score?\"*\n\nAsk me anything below!",
       timestamp: 'Just now'
     }
   ]);
@@ -98,12 +94,12 @@ export const PrivacyCopilot: React.FC = () => {
   if (!isCopilotOpen) return null;
 
   const quickPrompts = [
+    'Who is Alan Turing?',
     'Calculate 18% of 2,450',
+    'What is the capital of Peru?',
     'Explain Zero Knowledge Proofs',
-    'Draft an erasure request email',
     'Activate Privacy Lockdown',
-    'Convert 65 miles to km',
-    'Why is my privacy score calculated this way?'
+    'Draft an erasure request email'
   ];
 
   const handleSend = async (text: string) => {
@@ -133,113 +129,34 @@ export const PrivacyCopilot: React.FC = () => {
       setActiveTab
     };
 
+    const history = messages.slice(-6).map(m => ({
+      role: m.sender,
+      text: m.text
+    }));
+
     try {
-      // Priority 1: Check for Direct In-App Actions (lockdown toggle, deletion, navigation)
-      const actionResponse = handleAppActions(text, appContext);
-      if (actionResponse) {
-        setTimeout(() => {
-          setMessages(prev => [
-            ...prev,
-            {
-              id: `msg-${Date.now() + 1}`,
-              sender: 'copilot',
-              text: actionResponse,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              isAction: true
-            }
-          ]);
-          setIsTyping(false);
-        }, 300);
-        return;
-      }
-
-      // Priority 2: Check for Math and Calculations
-      const mathResult = evaluateMath(text);
-      if (mathResult) {
-        setTimeout(() => {
-          setMessages(prev => [
-            ...prev,
-            {
-              id: `msg-${Date.now() + 1}`,
-              sender: 'copilot',
-              text: mathResult,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }
-          ]);
-          setIsTyping(false);
-        }, 200);
-        return;
-      }
-
-      // Priority 3: Check for Unit Conversions
-      const conversionResult = evaluateUnitConversion(text);
-      if (conversionResult) {
-        setTimeout(() => {
-          setMessages(prev => [
-            ...prev,
-            {
-              id: `msg-${Date.now() + 1}`,
-              sender: 'copilot',
-              text: conversionResult,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }
-          ]);
-          setIsTyping(false);
-        }, 200);
-        return;
-      }
-
-      // Priority 4: If Gemini Cloud Mode is active and key is present, query Gemini API
-      if (modelMode === 'gemini' && geminiApiKey.trim()) {
-        const history = messages.slice(-6).map(m => ({
-          role: m.sender === 'user' ? ('user' as const) : ('model' as const),
-          text: m.text
-        }));
-
-        try {
-          const geminiAnswer = await queryGemini(geminiApiKey, text, history, appContext);
-          setMessages(prev => [
-            ...prev,
-            {
-              id: `msg-${Date.now() + 1}`,
-              sender: 'copilot',
-              text: `✨ ${geminiAnswer}`,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }
-          ]);
-          setIsTyping(false);
-          return;
-        } catch (err: any) {
-          // Fall back gracefully to built-in local engine
-          console.warn('Gemini API call failed, falling back to local engine:', err);
+      const result = await processCopilotQuery(text, history, appContext, modelMode, geminiApiKey);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `msg-${Date.now() + 1}`,
+          sender: 'copilot',
+          text: result.text,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isAction: result.isAction
         }
-      }
-
-      // Priority 5: Built-in Lightweight AI Knowledge Engine (Instant & Offline)
-      setTimeout(() => {
-        const knowledgeAnswer = queryKnowledgeBase(text, appContext);
-        setMessages(prev => [
-          ...prev,
-          {
-            id: `msg-${Date.now() + 1}`,
-            sender: 'copilot',
-            text: knowledgeAnswer,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
-        setIsTyping(false);
-      }, 350);
-
+      ]);
     } catch (error) {
       setMessages(prev => [
         ...prev,
         {
           id: `msg-${Date.now() + 1}`,
           sender: 'copilot',
-          text: "I encountered an error processing your query. Please try rephrasing or asking a different question.",
+          text: "I encountered an error retrieving that information. Please try rephrasing your question.",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
+    } finally {
       setIsTyping(false);
     }
   };
@@ -249,7 +166,7 @@ export const PrivacyCopilot: React.FC = () => {
       {
         id: `msg-${Date.now()}`,
         sender: 'copilot',
-        text: "🧹 Conversation history cleared. How can I help you next?",
+        text: "🧹 Conversation history cleared. Ask me any world knowledge, calculation, or privacy question!",
         timestamp: 'Just now'
       }
     ]);
@@ -257,7 +174,7 @@ export const PrivacyCopilot: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end p-2 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg h-[92vh] max-h-[720px] glass-panel rounded-3xl border border-indigo-500/40 bg-[#0b1120]/95 shadow-2xl flex flex-col justify-between overflow-hidden">
+      <div className="relative w-full max-w-lg h-[92vh] max-h-[740px] glass-panel rounded-3xl border border-indigo-500/40 bg-[#0b1120]/95 shadow-2xl flex flex-col justify-between overflow-hidden">
         {/* Header */}
         <div className="p-3.5 sm:p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
           <div className="flex items-center gap-2.5">
@@ -274,11 +191,11 @@ export const PrivacyCopilot: React.FC = () => {
                     ? 'bg-purple-950/80 text-purple-300 border-purple-500/40'
                     : 'bg-cyan-950/80 text-cyan-300 border-cyan-500/40'
                 }`}>
-                  {modelMode === 'gemini' ? 'GEMINI 1.5 LLM' : 'BUILT-IN AI'}
+                  {modelMode === 'gemini' ? 'GEMINI 1.5 LLM' : 'GLOBAL AI ENGINE'}
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 font-mono">
-                Math • Calculations • World Knowledge • Real-time Firewall
+                World Knowledge • Calculations • Real-time Firewall
               </p>
             </div>
           </div>
@@ -288,7 +205,7 @@ export const PrivacyCopilot: React.FC = () => {
             <button
               onClick={() => setShowKeyModal(true)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Configure Gemini Cloud LLM or Built-in Engine"
+              title="Configure Gemini Cloud LLM or Global AI Engine"
             >
               <Key className="w-4 h-4" />
             </button>
@@ -341,8 +258,8 @@ export const PrivacyCopilot: React.FC = () => {
                     : 'bg-slate-800/80 border-slate-700 text-slate-400'
                 }`}
               >
-                <div className="font-bold text-xs text-white">⚡ Built-in Engine</div>
-                <div className="text-[10px] text-slate-400 mt-0.5">Instant, offline, zero API key needed</div>
+                <div className="font-bold text-xs text-white">⚡ Global AI Engine</div>
+                <div className="text-[10px] text-slate-400 mt-0.5">Live world knowledge, math &amp; privacy (zero API key needed)</div>
               </button>
 
               <button
@@ -394,7 +311,7 @@ export const PrivacyCopilot: React.FC = () => {
               }`}
             >
               <div
-                className={`max-w-[88%] p-3.5 rounded-2xl whitespace-pre-line leading-relaxed ${
+                className={`max-w-[90%] p-3.5 rounded-2xl whitespace-pre-line leading-relaxed ${
                   m.sender === 'user'
                     ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-none shadow-sm'
                     : m.isAction
@@ -416,6 +333,7 @@ export const PrivacyCopilot: React.FC = () => {
                 <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '0ms' }} />
                 <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '150ms' }} />
                 <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="text-[10px] text-slate-400 font-mono ml-2">Searching knowledge network...</span>
               </div>
             </div>
           )}
@@ -427,7 +345,7 @@ export const PrivacyCopilot: React.FC = () => {
         <div className="p-3 border-t border-slate-800/80 bg-slate-900/60 space-y-1.5">
           <div className="flex items-center justify-between text-[10px] font-mono uppercase text-slate-500">
             <span>Ask anything:</span>
-            <span>Math • Science • Privacy</span>
+            <span>World Knowledge • Math • Privacy</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {quickPrompts.slice(0, 3).map((prompt, idx) => (
@@ -449,7 +367,7 @@ export const PrivacyCopilot: React.FC = () => {
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend(inputQuery)}
-            placeholder="Ask calculations, world events, GDPR, or firewall actions..."
+            placeholder="Ask any world knowledge, calculation, or privacy command..."
             className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
           />
           <button

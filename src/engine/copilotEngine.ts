@@ -19,18 +19,16 @@ export interface CopilotAppContext {
 export function evaluateMath(query: string): string | null {
   const clean = query.trim().toLowerCase();
 
-  // Pattern checks for arithmetic or math questions
-  // e.g. "what is 25 * 40", "calculate 15% of 850", "sqrt(144)", "5^3 + 20"
+  // Percentage calculations: e.g. "15% of 850", "calculate 20% of 1200"
   const percentageMatch = clean.match(/(?:what is|calculate)?\s*(\d+(?:\.\d+)?)\s*%\s*(?:of)\s*(\d+(?:\.\d+)?)/i);
   if (percentageMatch) {
     const pct = parseFloat(percentageMatch[1]);
     const total = parseFloat(percentageMatch[2]);
     const res = (pct / 100) * total;
-    return `📊 Calculation Result:\n${pct}% of ${total} = ${res.toLocaleString()}`;
+    return `🧮 **Mathematical Solution:**\n**${pct}%** of **${total.toLocaleString()}** = **${res.toLocaleString()}**`;
   }
 
-  // Arithmetic expression extractor
-  // Look for patterns like "calculate 450 * 12.5" or "124 + 582" or "math: ..."
+  // Arithmetic and standard mathematical expressions
   let expr = clean
     .replace(/^what is\s+/i, '')
     .replace(/^calculate\s+/i, '')
@@ -40,7 +38,7 @@ export function evaluateMath(query: string): string | null {
     .replace(/\?/g, '')
     .trim();
 
-  // Handle sqrt, pow, log
+  // Handle sqrt, pow, trig
   let evalReady = expr
     .replace(/sqrt\(([^)]+)\)/g, 'Math.sqrt($1)')
     .replace(/square root of\s+(\d+(?:\.\d+)?)/g, 'Math.sqrt($1)')
@@ -53,15 +51,14 @@ export function evaluateMath(query: string): string | null {
   // Verify only safe characters exist: digits, operators, parens, Math methods
   if (/^[0-9\.\s\+\-\*\/\(\)\,\^Math\.sqrtpowsincosabsPI]+$/.test(evalReady) && /[0-9]/.test(evalReady)) {
     try {
-      // Evaluate in safe isolated function
       const fn = new Function(`return (${evalReady})`);
       const val = fn();
       if (typeof val === 'number' && !isNaN(val) && isFinite(val)) {
         const rounded = Math.abs(val - Math.round(val)) < 1e-9 ? Math.round(val) : parseFloat(val.toFixed(6));
-        return `🧮 Mathematical Solution:\n**${expr}** = **${rounded.toLocaleString()}**`;
+        return `🧮 **Mathematical Solution:**\n**${expr}** = **${rounded.toLocaleString()}**`;
       }
     } catch {
-      // Not a valid standalone math formula
+      // Not a valid math formula
     }
   }
 
@@ -69,7 +66,7 @@ export function evaluateMath(query: string): string | null {
 }
 
 /**
- * Unit & Measurement Conversions
+ * Universal Unit & Measurement Conversions
  */
 export function evaluateUnitConversion(query: string): string | null {
   const clean = query.trim().toLowerCase();
@@ -78,12 +75,12 @@ export function evaluateUnitConversion(query: string): string | null {
   const miToKm = clean.match(/(\d+(?:\.\d+)?)\s*(?:miles|mi)\s*(?:to|in)\s*(?:km|kilometers)/);
   if (miToKm) {
     const val = parseFloat(miToKm[1]);
-    return `📏 Conversion:\n${val} miles = **${(val * 1.60934).toFixed(3)} km**`;
+    return `📏 **Unit Conversion:**\n${val} miles = **${(val * 1.60934).toFixed(3)} km**`;
   }
   const kmToMi = clean.match(/(\d+(?:\.\d+)?)\s*(?:km|kilometers)\s*(?:to|in)\s*(?:miles|mi)/);
   if (kmToMi) {
     const val = parseFloat(kmToMi[1]);
-    return `📏 Conversion:\n${val} km = **${(val / 1.60934).toFixed(3)} miles**`;
+    return `📏 **Unit Conversion:**\n${val} km = **${(val / 1.60934).toFixed(3)} miles**`;
   }
 
   // Celsius <-> Fahrenheit
@@ -91,20 +88,32 @@ export function evaluateUnitConversion(query: string): string | null {
   if (cToF) {
     const c = parseFloat(cToF[1]);
     const f = (c * 9/5) + 32;
-    return `🌡️ Temperature Conversion:\n${c}°C = **${f.toFixed(2)}°F**`;
+    return `🌡️ **Temperature Conversion:**\n${c}°C = **${f.toFixed(2)}°F**`;
   }
   const fToC = clean.match(/(-?\d+(?:\.\d+)?)\s*(?:f|fahrenheit)\s*(?:to|in)\s*(?:c|celsius)/);
   if (fToC) {
     const f = parseFloat(fToC[1]);
     const c = (f - 32) * 5/9;
-    return `🌡️ Temperature Conversion:\n${f}°F = **${c.toFixed(2)}°C**`;
+    return `🌡️ **Temperature Conversion:**\n${f}°F = **${c.toFixed(2)}°C**`;
   }
 
-  // Data storage: GB to MB, TB to GB
+  // Pounds <-> Kilograms
+  const lbsToKg = clean.match(/(\d+(?:\.\d+)?)\s*(?:lbs|pounds)\s*(?:to|in)\s*(?:kg|kilograms)/);
+  if (lbsToKg) {
+    const val = parseFloat(lbsToKg[1]);
+    return `⚖️ **Weight Conversion:**\n${val} lbs = **${(val * 0.453592).toFixed(3)} kg**`;
+  }
+  const kgToLbs = clean.match(/(\d+(?:\.\d+)?)\s*(?:kg|kilograms)\s*(?:to|in)\s*(?:lbs|pounds)/);
+  if (kgToLbs) {
+    const val = parseFloat(kgToLbs[1]);
+    return `⚖️ **Weight Conversion:**\n${val} kg = **${(val / 0.453592).toFixed(3)} lbs**`;
+  }
+
+  // Digital storage: GB to MB, TB to GB
   const gbToMb = clean.match(/(\d+(?:\.\d+)?)\s*(?:gb|gigabytes)\s*(?:to|in)\s*(?:mb|megabytes)/);
   if (gbToMb) {
     const val = parseFloat(gbToMb[1]);
-    return `💾 Digital Storage:\n${val} GB = **${(val * 1024).toLocaleString()} MB** (binary / MiB) or ${(val * 1000).toLocaleString()} MB (decimal)`;
+    return `💾 **Digital Storage Conversion:**\n${val} GB = **${(val * 1024).toLocaleString()} MB** (binary / MiB) or ${(val * 1000).toLocaleString()} MB (decimal)`;
   }
 
   return null;
@@ -117,7 +126,7 @@ export function handleAppActions(query: string, ctx: CopilotAppContext): string 
   const q = query.toLowerCase();
 
   // 1. Activate Privacy Lockdown
-  if (q.includes('activate lockdown') || q.includes('turn on lockdown') || q.includes('enable lockdown')) {
+  if (q.includes('activate lockdown') || q.includes('turn on lockdown') || q.includes('enable lockdown') || q.includes('start lockdown')) {
     if (ctx.isLockdownActive) {
       return "🛡️ **Privacy Lockdown is already ACTIVE.** All non-essential telemetry and tracking requests are currently restricted.";
     }
@@ -147,7 +156,7 @@ export function handleAppActions(query: string, ctx: CopilotAppContext): string 
   }
 
   // 4. Request Deletion / Erase Data
-  if (q.includes('erase my location') || q.includes('delete location data')) {
+  if (q.includes('erase my location') || q.includes('delete location data') || q.includes('purge location')) {
     if (ctx.submitErasureRequest) {
       ctx.submitErasureRequest(['Location']);
       return "🗑️ **ACTION EXECUTED: GDPR ART. 17 ERASURE INITIATED.**\n\nI have dispatched a verified deletion ticket for your Location records across all connected downstream replicas. You can track completion in the Dashboard.";
@@ -155,29 +164,103 @@ export function handleAppActions(query: string, ctx: CopilotAppContext): string 
   }
 
   // 5. Navigate to tab
-  if (q.includes('go to simulator') || q.includes('open simulator')) {
+  if (q.includes('go to simulator') || q.includes('open simulator') || q.includes('launch simulator')) {
     if (ctx.setActiveTab) ctx.setActiveTab('simulator');
     return "🚀 **Navigated to Request Simulator.** You can now run live interception tests!";
   }
-  if (q.includes('go to audit') || q.includes('open audit log')) {
+  if (q.includes('go to audit') || q.includes('open audit log') || q.includes('show audit')) {
     if (ctx.setActiveTab) ctx.setActiveTab('audit');
     return "📋 **Navigated to Audit Log.** Here is your immutable event ledger.";
   }
-  if (q.includes('go to data flow') || q.includes('open data flow')) {
+  if (q.includes('go to data flow') || q.includes('open data flow') || q.includes('show map')) {
     if (ctx.setActiveTab) ctx.setActiveTab('flow');
     return "🗺️ **Navigated to Data Flow Map.** You can inspect all node connections.";
+  }
+  if (q.includes('go to my data') || q.includes('open inventory') || q.includes('show inventory')) {
+    if (ctx.setActiveTab) ctx.setActiveTab('inventory');
+    return "📂 **Navigated to My Data Inventory.** Review your collected personal data.";
   }
 
   return null;
 }
 
 /**
- * Built-in Encyclopedic Intelligence & Natural Language Knowledge Base
+ * Real-Time Global World Knowledge Search (Wikipedia REST API + DuckDuckGo Instant Answer)
+ * Queries live knowledge across the entire world with zero-API-key & zero-CORS restriction.
  */
-export function queryKnowledgeBase(query: string, ctx: CopilotAppContext): string {
+export async function fetchWorldKnowledge(query: string): Promise<string | null> {
+  try {
+    // 1. Clean query to extract core entity or topic
+    let cleaned = query
+      .replace(/^(who is|who was|what is|what was|what are|where is|when was|when did|tell me about|explain|how does|why is|why are|define)\s+/i, '')
+      .replace(/\?+$/, '')
+      .trim();
+
+    if (!cleaned || cleaned.length < 2) return null;
+
+    // 2. Search Wikipedia API with origin=* for CORS freedom
+    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleaned)}&utf8=&format=json&origin=*`;
+    const searchResp = await fetch(searchUrl, { headers: { 'Accept': 'application/json' } });
+    if (!searchResp.ok) return null;
+
+    const searchData = await searchResp.json();
+    const results = searchData?.query?.search;
+    if (!results || results.length === 0) {
+      // Fallback to DuckDuckGo Instant Answer
+      return await fetchDuckDuckGo(cleaned);
+    }
+
+    // Top matching title
+    const topTitle = results[0].title;
+
+    // 3. Fetch comprehensive introductory extract & description
+    const extractUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts|description&exintro=true&explaintext=true&titles=${encodeURIComponent(topTitle)}&format=json&origin=*`;
+    const extractResp = await fetch(extractUrl, { headers: { 'Accept': 'application/json' } });
+    if (!extractResp.ok) return null;
+
+    const extractData = await extractResp.json();
+    const pages = extractData?.query?.pages;
+    if (!pages) return null;
+
+    const page: any = Object.values(pages)[0];
+    if (!page || !page.extract || page.extract.length < 20) {
+      return await fetchDuckDuckGo(cleaned);
+    }
+
+    const description = page.description ? `*(${page.description})*` : '';
+    // Format response cleanly
+    return `🌐 **${page.title}** ${description}\n\n${page.extract}\n\n*(Source: Global Knowledge Network)*`;
+  } catch (err) {
+    console.warn('World knowledge fetch error, attempting fallback:', err);
+    return null;
+  }
+}
+
+/**
+ * Fallback to DuckDuckGo Instant Answer API
+ */
+async function fetchDuckDuckGo(query: string): Promise<string | null> {
+  try {
+    const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
+    const resp = await fetch(ddgUrl);
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (data.AbstractText && data.AbstractText.length > 20) {
+      return `🌐 **${data.Heading || query}**\n\n${data.AbstractText}\n\n*(Source: DuckDuckGo Knowledge)*`;
+    }
+  } catch {
+    // Ignore fallback failure
+  }
+  return null;
+}
+
+/**
+ * Built-in Cybersecurity, Privacy, and Conversational Intelligence
+ */
+export function queryBuiltInKnowledge(query: string, ctx: CopilotAppContext): string | null {
   const q = query.toLowerCase();
 
-  // --- CYBERSECURITY & PRIVACY TECHNOLOGIES ---
+  // --- PRIVACY & CYBERSECURITY TECHNOLOGIES ---
   if (q.includes('zero knowledge') || q.includes('zk-snark') || q.includes('zkp')) {
     return `🔐 **Zero-Knowledge Proofs (ZKPs):**\n\nA cryptographic protocol allowing one party (the prover) to prove to another party (the verifier) that a statement is true without revealing any information beyond the statement's validity.\n\n• **Core Properties:** Completeness, Soundness, and Zero-Knowledge.\n• **Modern Variants:** ZK-SNARKs (Succinct Non-Interactive Arguments of Knowledge) and ZK-STARKs.\n• **Privacy Applications:** Anonymous credentials, private blockchain transactions, and privacy-preserving identity verification.`;
   }
@@ -208,11 +291,11 @@ export function queryKnowledgeBase(query: string, ctx: CopilotAppContext): strin
     return `🇪🇺 **GDPR (General Data Protection Regulation):**\n\nThe landmark European Union privacy regulation enacted on May 25, 2018. It enforces global extraterritorial reach for any company processing EU citizens' data, mandating explicit consent, purpose limitation, data portability, and fines up to €20M or 4% of global annual turnover.`;
   }
 
-  if (q.includes('ccpa') || q.includes('cpra') || q.includes('california')) {
+  if (q.includes('ccpa') || q.includes('cpra')) {
     return `🏛️ **CCPA / CPRA (California Consumer Privacy Act / Rights Act):**\n\nComprehensive US state privacy law granting California consumers rights to:\n• Know what personal information is collected.\n• Delete personal information held by businesses.\n• Opt-out of the "sale" or "sharing" of personal data.\n• Non-discrimination for exercising privacy rights.`;
   }
 
-  if (q.includes('dpdp') || q.includes('india') || q.includes('digital personal data')) {
+  if (q.includes('dpdp') || q.includes('india') && q.includes('privacy')) {
     return `🇮🇳 **India's Digital Personal Data Protection (DPDP) Act 2023:**\n\nIndia's primary statutory framework governing digital personal data. It mandates notice and consent architectures (Consent Managers), restricts cross-border transfers to unauthorized countries, protects children's data, and imposes penalties up to ₹250 Crore for significant data breaches.`;
   }
 
@@ -225,41 +308,28 @@ export function queryKnowledgeBase(query: string, ctx: CopilotAppContext): strin
     return `📝 **Privacy Policy "Purpose Limitation & Minimization" Clause Draft:**\n\n\`\`\`text\nSection 4: Purpose Limitation & Data Minimization\nWe collect personal data strictly for specified, explicit, and legitimate purposes disclosed at the time of collection. In accordance with Privacy-by-Design principles, we limit data collection to the minimum attributes required to fulfill that specific service. We do not repurpose, cross-reference, or sell personal telemetry to third-party advertising networks without affirmative, granular consent.\n\`\`\``;
   }
 
-  // --- GENERAL WORLD KNOWLEDGE & SCIENCE ---
-  if (q.includes('capital of') || q.includes('what is the capital')) {
-    const capitals: Record<string, string> = {
-      'france': 'Paris', 'germany': 'Berlin', 'italy': 'Rome', 'spain': 'Madrid',
-      'japan': 'Tokyo', 'china': 'Beijing', 'india': 'New Delhi', 'united kingdom': 'London',
-      'uk': 'London', 'canada': 'Ottawa', 'australia': 'Canberra', 'brazil': 'Brasília',
-      'russia': 'Moscow', 'south korea': 'Seoul', 'united states': 'Washington, D.C.', 'usa': 'Washington, D.C.'
-    };
-    for (const [country, cap] of Object.entries(capitals)) {
-      if (q.includes(country)) {
-        return `🌍 **World Geography:**\nThe capital of ${country.toUpperCase()} is **${cap}**.`;
-      }
-    }
-  }
-
-  if (q.includes('who created linux') || q.includes('who invented linux')) {
-    return `🐧 **Linux History:**\nLinux was created by **Linus Torvalds** in 1991 while studying at the University of Helsinki. Today it powers the majority of global servers, cloud infrastructure, Android devices, and supercomputers.`;
-  }
-
-  if (q.includes('speed of light')) {
-    return `⚡ **Physics Constant:**\nThe speed of light in a vacuum ($c$) is exactly **299,792,458 meters per second** (approximately $300,000\\text{ km/s}$ or $186,282\\text{ miles per second}$).`;
-  }
-
-  if (q.includes('what is an api') || q.includes('explain api')) {
-    return `🔌 **Application Programming Interface (API):**\n\nAn API is a standardized set of protocols and specifications that allows different software applications to communicate and exchange data with one another.\n\n• In PrivacyGuard, APIs are monitored at the gateway level to intercept unapproved data transfers before they exit the device.`;
-  }
-
-  // --- CODING & TECHNICAL HELP ---
-  if (q.includes('code') || q.includes('python') || q.includes('javascript') || q.includes('typescript') || q.includes('regex')) {
+  // --- CODING ASSISTANT ---
+  if (q.includes('code') || q.includes('python') || q.includes('javascript') || q.includes('typescript') || q.includes('sql') || q.includes('regex')) {
     if (q.includes('email regex') || q.includes('validate email')) {
       return `💻 **Email Validation Regular Expression:**\n\n\`\`\`javascript\nconst emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;\n\nfunction isValidEmail(email) {\n  return emailRegex.test(email);\n}\n\`\`\``;
     }
-    if (q.includes('hash') || q.includes('sha-256') || q.includes('crypto')) {
-      return `💻 **Web Crypto API (SHA-256 in JavaScript):**\n\n\`\`\`javascript\nasync function sha256(message) {\n  const msgUint8 = new TextEncoder().encode(message);\n  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);\n  const hashArray = Array.from(new Uint8Array(hashBuffer));\n  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');\n}\n\`\`\``;
+    if (q.includes('reverse a string') || q.includes('reverse string')) {
+      return `💻 **Reverse a String in Python & JavaScript:**\n\n**Python:**\n\`\`\`python\ndef reverse_string(s: str) -> str:\n    return s[::-1]\n\`\`\`\n\n**JavaScript / TypeScript:**\n\`\`\`typescript\nconst reverseString = (s: string): string => s.split('').reverse().join('');\n\`\`\``;
     }
+  }
+
+  // --- CONVERSATIONAL (JOKES, POEMS, CHIT-CHAT) ---
+  if (q.includes('tell me a joke') || q.includes('tell a joke') || q.includes('make me laugh')) {
+    const jokes = [
+      "Why do privacy enthusiasts love camping?\nBecause they can't be tracked in incognito mode in the woods! 🏕️",
+      "Why did the database administrator break up with the third-party cookie?\nBecause there was zero trust and too much tracking! 🍪",
+      "Why are encryption keys terrible at sharing secrets?\nBecause they're too private! 🔑"
+    ];
+    return `😄 **Here's a joke for you:**\n\n${jokes[Math.floor(Math.random() * jokes.length)]}`;
+  }
+
+  if (q.includes('write a poem') || q.includes('poem')) {
+    return `📜 **Ode to Personal Sovereignty:**\n\n*Through copper wire and fiber stream,*\n*They chase your shadow, track your dream.*\n*A click, a scroll, a fleeting trace,*\n*Recorded in some distant place.*\n\n*Yet stands a shield of quiet might,*\n*A firewall guarded day and night.*\n*No tracker passes unpermitted,*\n*No stolen byte goes uncommitted.*\n\n*Your data stays where it belongs—*\n*Protected, private, sovereign, strong.* 🛡️`;
   }
 
   // --- LIVE APPLICATION QUERIES ---
@@ -286,8 +356,7 @@ export function queryKnowledgeBase(query: string, ctx: CopilotAppContext): strin
     return `📍 **Active Location Permissions:**\n${list}\n\nPrivacyGuard ensures that if any service attempts to repurpose your coordinates for advertising, it is immediately stopped.`;
   }
 
-  // Default Conversational Answer
-  return `🤖 **PrivacyGuard AI Assistant:**\n\nI can answer questions across technology, privacy regulations (GDPR, CCPA, DPDP), cybersecurity incidents, mathematical calculations, unit conversions, code generation, and direct PrivacyGuard firewall controls!\n\n**Try asking:**\n• "What is 15% of 1,250?"\n• "Convert 75 miles to km"\n• "Explain Zero Knowledge Proofs"\n• "Draft an email requesting data deletion under GDPR Art 17"\n• "Activate Privacy Lockdown"`;
+  return null;
 }
 
 /**
@@ -346,4 +415,64 @@ Be intelligent, concise, knowledgeable about global events, cybersecurity, math,
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error('No response text received from Gemini');
   return text;
+}
+
+/**
+ * Master Processor: Evaluates any user query through the Multi-Tier Intelligence Pipeline
+ */
+export async function processCopilotQuery(
+  query: string,
+  history: Array<{ role: 'user' | 'copilot'; text: string }>,
+  ctx: CopilotAppContext,
+  modelMode: 'local' | 'gemini',
+  geminiApiKey: string
+): Promise<{ text: string; isAction?: boolean }> {
+  // Tier 1: Interactive App Actions (e.g. "turn on lockdown", "reset demo", "erase location")
+  const actionRes = handleAppActions(query, ctx);
+  if (actionRes) {
+    return { text: actionRes, isAction: true };
+  }
+
+  // Tier 2: Mathematical Expressions & Formulas
+  const mathRes = evaluateMath(query);
+  if (mathRes) {
+    return { text: mathRes };
+  }
+
+  // Tier 3: Universal Unit Conversions
+  const convRes = evaluateUnitConversion(query);
+  if (convRes) {
+    return { text: convRes };
+  }
+
+  // Tier 4: Gemini Cloud LLM (if enabled with API key)
+  if (modelMode === 'gemini' && geminiApiKey.trim()) {
+    try {
+      const gHistory = history.map(h => ({
+        role: h.role === 'user' ? ('user' as const) : ('model' as const),
+        text: h.text
+      }));
+      const gAnswer = await queryGemini(geminiApiKey, query, gHistory, ctx);
+      return { text: `✨ ${gAnswer}` };
+    } catch (err) {
+      console.warn('Gemini query failed, continuing in global engine:', err);
+    }
+  }
+
+  // Tier 5: Built-in Privacy, Cybersecurity, Coding, and Conversational Knowledge
+  const builtInRes = queryBuiltInKnowledge(query, ctx);
+  if (builtInRes) {
+    return { text: builtInRes };
+  }
+
+  // Tier 6: Live Global World Knowledge Search (Wikipedia & DuckDuckGo APIs)
+  const worldRes = await fetchWorldKnowledge(query);
+  if (worldRes) {
+    return { text: worldRes };
+  }
+
+  // Tier 7: Conversational Fallback Synthesizer
+  return {
+    text: `💡 **PrivacyGuard Intelligence Assistant:**\n\nI processed your inquiry: "*${query}*".\n\nI can assist you with:\n• **World Knowledge & History** (e.g. *Who is Alan Turing?*, *Capital of Brazil*, *What is quantum entanglement?*)\n• **Mathematics & Calculations** (e.g. *Calculate 15% of 850*, *Square root of 256*)\n• **Unit Conversions** (e.g. *50 miles to km*, *30 C to F*)\n• **Cybersecurity & Privacy** (e.g. *Explain Zero Knowledge Proofs*, *GDPR Article 17*, *Differential Privacy*)\n• **Live Firewall Actions** (e.g. *Activate Privacy Lockdown*, *Show my privacy score*, *Go to simulator*)`
+  };
 }
