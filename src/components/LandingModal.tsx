@@ -13,7 +13,9 @@ import { usePrivacy } from '../context/PrivacyContext';
 
 export const LandingModal: React.FC = () => {
   const { startTour, isLandingModalOpen, setIsLandingModalOpen, currentTheme } = usePrivacy();
-  const isBurgundy = currentTheme !== 'blue';
+  const isCosmic = currentTheme === 'cosmic';
+  const isBurgundy = currentTheme === 'burgundy';
+  const isDarkRed = isCosmic || isBurgundy;
 
   const handleEnter = (withTour: boolean) => {
     sessionStorage.setItem('privacyguard_has_entered', 'true');
@@ -28,14 +30,18 @@ export const LandingModal: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-300">
       <div className={`relative w-full max-w-xl glass-panel p-8 sm:p-10 rounded-3xl shadow-2xl text-center space-y-6 overflow-hidden border ${
-        isBurgundy ? 'border-red-500/40 bg-[#180308]/96 text-[#fff8e7]' : 'border-cyan-500/40 bg-[#0b1120]/95 text-slate-100'
+        isCosmic
+          ? 'border-red-900/20 bg-[#fff8e7]/98 text-[#2b060f]'
+          : isBurgundy
+            ? 'border-red-500/40 bg-[#180308]/96 text-[#fff8e7]'
+            : 'border-cyan-500/40 bg-[#0b1120]/95 text-slate-100'
       }`}>
         {/* Glow backdrop */}
         <div className={`absolute -top-24 -left-24 w-72 h-72 rounded-full blur-3xl pointer-events-none ${
-          isBurgundy ? 'bg-red-600/25' : 'bg-cyan-500/20'
+          isCosmic ? 'bg-red-400/15' : isBurgundy ? 'bg-red-600/25' : 'bg-cyan-500/20'
         }`} />
         <div className={`absolute -bottom-24 -right-24 w-72 h-72 rounded-full blur-3xl pointer-events-none ${
-          isBurgundy ? 'bg-rose-600/25' : 'bg-blue-600/20'
+          isCosmic ? 'bg-rose-400/15' : isBurgundy ? 'bg-rose-600/25' : 'bg-blue-600/20'
         }`} />
 
         {/* Shield Icon with Golden Mandala Watermark Aura */}
@@ -43,55 +49,61 @@ export const LandingModal: React.FC = () => {
           <img
             src={mandalaWatermark}
             alt=""
-            className="absolute inset-0 w-full h-full opacity-45 animate-spin-very-slow drop-shadow-[0_0_20px_rgba(255,248,231,0.5)]"
+            className={`absolute inset-0 w-full h-full animate-spin-very-slow ${
+              isCosmic ? 'opacity-35 mix-blend-multiply drop-shadow-[0_0_15px_rgba(185,28,28,0.2)]' : 'opacity-45 drop-shadow-[0_0_20px_rgba(255,248,231,0.5)]'
+            }`}
           />
           <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg border ${
-            isBurgundy
-              ? 'bg-gradient-to-tr from-red-950 via-burgundy-900 to-[#180308] border-red-500/50 shadow-red-600/30'
-              : 'bg-gradient-to-tr from-amber-500/20 via-yellow-600/30 to-amber-700/40 border-amber-400/60 shadow-amber-500/25'
+            isCosmic
+              ? 'bg-gradient-to-tr from-red-600 to-rose-700 border-red-400 text-white shadow-md'
+              : isBurgundy
+                ? 'bg-gradient-to-tr from-red-950 via-burgundy-900 to-[#180308] border-red-500/50 shadow-red-600/30'
+                : 'bg-gradient-to-tr from-amber-500/20 via-yellow-600/30 to-amber-700/40 border-amber-400/60 shadow-amber-500/25'
           }`}>
-            <Shield className={`w-8 h-8 ${isBurgundy ? 'text-red-400' : 'text-amber-400'}`} />
+            <Shield className={`w-8 h-8 ${isCosmic ? 'text-white' : isBurgundy ? 'text-red-400' : 'text-amber-400'}`} />
           </div>
         </div>
 
         {/* Title and Tagline */}
         <div className="relative z-10 space-y-2">
           <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono border ${
-            isBurgundy
-              ? 'bg-red-950/80 border-red-500/40 text-[#fff8e7]'
-              : 'bg-amber-950/80 border-amber-500/40 text-amber-300'
+            isCosmic
+              ? 'bg-red-100 border-red-300 text-red-900 font-semibold'
+              : isBurgundy
+                ? 'bg-red-950/80 border-red-500/40 text-[#fff8e7]'
+                : 'bg-amber-950/80 border-amber-500/40 text-amber-300'
           }`}>
-            <span className={`w-2 h-2 rounded-full animate-pulse ${isBurgundy ? 'bg-red-400' : 'bg-amber-400'}`} />
+            <span className={`w-2 h-2 rounded-full animate-pulse ${isDarkRed ? 'bg-red-500' : 'bg-amber-400'}`} />
             CYBERSECURITY &amp; PRIVACY-PRESERVING TECHNOLOGY
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h1 className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${isCosmic ? 'text-[#2b060f]' : 'text-white'}`}>
             PRIVACYGUARD
           </h1>
-          <p className="text-lg sm:text-xl font-medium text-slate-300">
-            Your Personal Data. <span className={isBurgundy ? 'text-red-400' : 'text-amber-400'}>Your Rules.</span>
+          <p className={`text-lg sm:text-xl font-medium ${isCosmic ? 'text-[#5e1c28]' : 'text-slate-300'}`}>
+            Your Personal Data. <span className={isDarkRed ? 'text-red-600 font-semibold' : 'text-amber-400'}>Your Rules.</span>
           </p>
         </div>
 
         {/* Key Features Callout */}
         <div className="relative z-10 grid grid-cols-2 gap-3 text-left max-w-md mx-auto text-xs">
           <div className={`p-3 rounded-xl border space-y-1 ${
-            isBurgundy ? 'bg-red-950/60 border-red-500/30' : 'bg-slate-900/80 border-slate-800'
+            isCosmic ? 'bg-white border-red-200' : isBurgundy ? 'bg-red-950/60 border-red-500/30' : 'bg-slate-900/80 border-slate-800'
           }`}>
-            <span className={`font-bold flex items-center gap-1.5 ${isBurgundy ? 'text-red-400' : 'text-cyan-400'}`}>
+            <span className={`font-bold flex items-center gap-1.5 ${isDarkRed ? 'text-red-600' : 'text-cyan-400'}`}>
               <CheckCircle2 className="w-3.5 h-3.5" /> Purpose Firewall
             </span>
-            <p className={`text-[11px] ${isBurgundy ? 'text-[#fff8e7]/75' : 'text-slate-400'}`}>
+            <p className={`text-[11px] ${isCosmic ? 'text-[#5e1c28]' : isBurgundy ? 'text-[#fff8e7]/75' : 'text-slate-400'}`}>
               Blocks apps from using data outside granted consent.
             </p>
           </div>
 
           <div className={`p-3 rounded-xl border space-y-1 ${
-            isBurgundy ? 'bg-red-950/60 border-red-500/30' : 'bg-slate-900/80 border-slate-800'
+            isCosmic ? 'bg-white border-red-200' : isBurgundy ? 'bg-red-950/60 border-red-500/30' : 'bg-slate-900/80 border-slate-800'
           }`}>
-            <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+            <span className="font-bold text-emerald-600 flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5" /> Data Minimization
             </span>
-            <p className={`text-[11px] ${isBurgundy ? 'text-[#fff8e7]/75' : 'text-slate-400'}`}>
+            <p className={`text-[11px] ${isCosmic ? 'text-[#5e1c28]' : isBurgundy ? 'text-[#fff8e7]/75' : 'text-slate-400'}`}>
               Filters unnecessary attributes before transmission.
             </p>
           </div>
@@ -102,8 +114,8 @@ export const LandingModal: React.FC = () => {
           <button
             onClick={() => handleEnter(false)}
             className={`w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
-              isBurgundy
-                ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-[#fff8e7] border border-red-400/40 shadow-red-600/30'
+              isDarkRed
+                ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white shadow-md'
                 : 'bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 shadow-amber-500/25'
             }`}
           >
@@ -114,17 +126,19 @@ export const LandingModal: React.FC = () => {
           <button
             onClick={() => handleEnter(true)}
             className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-sm border transition-all cursor-pointer flex items-center justify-center gap-2 ${
-              isBurgundy
-                ? 'bg-red-950/70 hover:bg-red-900 text-[#fff8e7] border-red-500/40'
-                : 'bg-slate-800/90 hover:bg-slate-700 text-slate-200 border-amber-500/30 hover:border-amber-400'
+              isCosmic
+                ? 'bg-white hover:bg-red-50 text-[#2b060f] border-red-300'
+                : isBurgundy
+                  ? 'bg-red-950/70 hover:bg-red-900 text-[#fff8e7] border-red-500/40'
+                  : 'bg-slate-800/90 hover:bg-slate-700 text-slate-200 border-amber-500/30 hover:border-amber-400'
             }`}
           >
-            <Play className={`w-4 h-4 fill-current ${isBurgundy ? 'text-red-400' : 'text-amber-400'}`} />
+            <Play className={`w-4 h-4 fill-current ${isDarkRed ? 'text-red-600' : 'text-amber-400'}`} />
             <span>Start Guided Pitch Tour</span>
           </button>
         </div>
 
-        <p className="relative z-10 text-[11px] font-mono text-slate-500">
+        <p className={`relative z-10 text-[11px] font-mono ${isCosmic ? 'text-[#882b3d]' : 'text-slate-500'}`}>
           Personal Data Firewall MVP • Ready for Live Judging
         </p>
       </div>

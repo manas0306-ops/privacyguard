@@ -55,7 +55,9 @@ export const VoiceAssistantBar: React.FC = () => {
     currentTheme
   } = usePrivacy();
 
-  const isBurgundy = currentTheme !== 'blue';
+  const isCosmic = currentTheme === 'cosmic';
+  const isBurgundy = currentTheme === 'burgundy';
+  const isDarkRed = isCosmic || isBurgundy;
   const [isMinimized, setIsMinimized] = useState<boolean>(false);
   const [inputUtterance, setInputUtterance] = useState<string>('');
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
@@ -270,21 +272,27 @@ export const VoiceAssistantBar: React.FC = () => {
         <button
           onClick={() => setIsMinimized(false)}
           className={`flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-2xl transition-all cursor-pointer backdrop-blur-md group border ${
-            isBurgundy
-              ? 'bg-[#1a0309]/95 hover:bg-[#27050e]/95 border-red-500/50 text-[#fff8e7]'
-              : 'bg-slate-900/95 hover:bg-slate-800/95 border-cyan-500/50 hover:border-cyan-400 text-cyan-300 hover:text-white'
+            isCosmic
+              ? 'bg-white/95 hover:bg-red-50/95 border-red-300 text-[#2b060f] shadow-xl'
+              : isBurgundy
+                ? 'bg-[#1a0309]/95 hover:bg-[#27050e]/95 border-red-500/50 text-[#fff8e7]'
+                : 'bg-slate-900/95 hover:bg-slate-800/95 border-cyan-500/50 hover:border-cyan-400 text-cyan-300 hover:text-white'
           }`}
           title="Open Voice Assistant Bar"
         >
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <Mic className={`w-4 h-4 transition-transform group-hover:scale-110 ${isBurgundy ? 'text-red-400' : 'text-cyan-400'}`} />
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <Mic className={`w-4 h-4 transition-transform group-hover:scale-110 ${
+            isCosmic ? 'text-red-600' : isBurgundy ? 'text-red-400' : 'text-cyan-400'
+          }`} />
           <span className="text-xs font-semibold tracking-wide">Voice Assistant</span>
           <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-            isBurgundy ? 'bg-red-950 text-[#fff8e7]/80' : 'text-slate-400 bg-slate-800'
+            isCosmic ? 'bg-red-100 text-red-900 font-semibold' : isBurgundy ? 'bg-red-950 text-[#fff8e7]/80' : 'text-slate-400 bg-slate-800'
           }`}>
             {currentAssistantState}
           </span>
-          <ChevronUp className={`w-3.5 h-3.5 transition-colors ${isBurgundy ? 'text-[#fff8e7]/60 group-hover:text-[#fff8e7]' : 'text-slate-400 group-hover:text-cyan-300'}`} />
+          <ChevronUp className={`w-3.5 h-3.5 transition-colors ${
+            isCosmic ? 'text-[#5e1c28] group-hover:text-red-900' : isBurgundy ? 'text-[#fff8e7]/60 group-hover:text-[#fff8e7]' : 'text-slate-400 group-hover:text-cyan-300'
+          }`} />
         </button>
       </aside>
     );
@@ -295,37 +303,43 @@ export const VoiceAssistantBar: React.FC = () => {
       {/* Toast Notification */}
       {toastMessage && (
         <div className={`mb-2 mx-auto w-fit px-4 py-1.5 rounded-full text-xs font-mono shadow-lg flex items-center gap-2 animate-bounce border ${
-          isBurgundy
-            ? 'bg-red-950/90 border-red-500/50 text-[#fff8e7]'
-            : 'bg-cyan-950/90 border-cyan-500/50 text-cyan-200'
+          isCosmic
+            ? 'bg-red-100 border-red-300 text-red-900'
+            : isBurgundy
+              ? 'bg-red-950/90 border-red-500/50 text-[#fff8e7]'
+              : 'bg-cyan-950/90 border-cyan-500/50 text-cyan-200'
         }`}>
-          <Sparkles className={`w-3.5 h-3.5 ${isBurgundy ? 'text-red-400' : 'text-cyan-400'}`} />
+          <Sparkles className={`w-3.5 h-3.5 ${isCosmic ? 'text-red-600' : isBurgundy ? 'text-red-400' : 'text-cyan-400'}`} />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Main Floating Voice Bar */}
       <div className={`rounded-2xl border backdrop-blur-xl shadow-2xl p-3 sm:p-4 transition-all ${
-        isBurgundy
-          ? 'border-red-500/35 bg-[#1a0309]/95 text-[#fff8e7]'
-          : 'border-slate-700/80 bg-slate-900/95 text-slate-100'
+        isCosmic
+          ? 'border-red-900/15 bg-white/95 text-[#2b060f] shadow-2xl'
+          : isBurgundy
+            ? 'border-red-500/35 bg-[#1a0309]/95 text-[#fff8e7]'
+            : 'border-slate-700/80 bg-slate-900/95 text-slate-100'
       }`}>
         {/* Top Header: State Indicator & Controls */}
         <div className={`flex items-center justify-between gap-2 pb-2 border-b text-xs ${
-          isBurgundy ? 'border-[#fff8e7]/15' : 'border-slate-800'
+          isCosmic ? 'border-red-900/10' : isBurgundy ? 'border-[#fff8e7]/15' : 'border-slate-800'
         }`}>
           <div className="flex items-center gap-2">
             <div className={`w-2.5 h-2.5 rounded-full ${
               isListening ? 'bg-red-500 animate-ping' :
               currentAssistantState === 'RESOLVING_CONTEXT' ? 'bg-amber-400 animate-pulse' :
               currentAssistantState === 'CLARIFICATION_REQUIRED' ? 'bg-orange-400' :
-              'bg-emerald-400'
+              'bg-emerald-500'
             }`} />
-            <span className={`font-semibold ${isBurgundy ? 'text-[#fff8e7]' : 'text-slate-300'}`}>
+            <span className={`font-semibold ${
+              isCosmic ? 'text-[#2b060f]' : isBurgundy ? 'text-[#fff8e7]' : 'text-slate-300'
+            }`}>
               {getStateLabel(currentAssistantState)}
             </span>
             <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-              isBurgundy ? 'bg-red-950 text-[#fff8e7]/80' : 'bg-slate-800 text-slate-400'
+              isCosmic ? 'bg-red-100 text-red-900 font-semibold' : isBurgundy ? 'bg-red-950 text-[#fff8e7]/80' : 'bg-slate-800 text-slate-400'
             }`}>
               {currentAssistantState}
             </span>
@@ -336,9 +350,11 @@ export const VoiceAssistantBar: React.FC = () => {
             <button
               onClick={() => setLanguage(l => l === 'en' ? 'hi' : 'en')}
               className={`px-2 py-0.5 text-[11px] font-medium rounded border transition-colors cursor-pointer ${
-                isBurgundy
-                  ? 'border-[#fff8e7]/20 hover:border-red-500/50 bg-red-950/60 text-[#fff8e7]'
-                  : 'border-slate-700 hover:border-cyan-500/50 bg-slate-800/80 text-slate-300 hover:text-white'
+                isCosmic
+                  ? 'border-red-200 hover:border-red-400 bg-red-50 text-red-900'
+                  : isBurgundy
+                    ? 'border-[#fff8e7]/20 hover:border-red-500/50 bg-red-950/60 text-[#fff8e7]'
+                    : 'border-slate-700 hover:border-cyan-500/50 bg-slate-800/80 text-slate-300 hover:text-white'
               }`}
               title="Toggle Voice Assistant Language (English / Hindi)"
             >
@@ -349,18 +365,18 @@ export const VoiceAssistantBar: React.FC = () => {
             <button
               onClick={() => setSpeechEnabled(s => !s)}
               className={`p-1 rounded transition-colors cursor-pointer ${
-                isBurgundy ? 'text-red-400 hover:text-[#fff8e7]' : 'text-slate-400 hover:text-cyan-400'
+                isCosmic ? 'text-red-700 hover:text-red-900' : isBurgundy ? 'text-red-400 hover:text-[#fff8e7]' : 'text-slate-400 hover:text-cyan-400'
               }`}
               title={speechEnabled ? 'Mute Speech Synthesis' : 'Unmute Speech Synthesis'}
             >
-              {speechEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className={`w-4 h-4 ${isBurgundy ? 'text-[#fff8e7]/40' : 'text-slate-500'}`} />}
+              {speechEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className={`w-4 h-4 ${isCosmic ? 'text-red-400' : isBurgundy ? 'text-[#fff8e7]/40' : 'text-slate-500'}`} />}
             </button>
 
             {/* Minimize Bar */}
             <button
               onClick={() => setIsMinimized(true)}
               className={`p-1 rounded transition-colors cursor-pointer ${
-                isBurgundy ? 'text-[#fff8e7]/60 hover:text-[#fff8e7]' : 'text-slate-400 hover:text-white'
+                isCosmic ? 'text-[#5e1c28] hover:text-red-900' : isBurgundy ? 'text-[#fff8e7]/60 hover:text-[#fff8e7]' : 'text-slate-400 hover:text-white'
               }`}
               title="Minimize Voice Assistant"
             >
@@ -374,14 +390,14 @@ export const VoiceAssistantBar: React.FC = () => {
           {transcriptHistory.slice(-2).map((item, idx) => (
             <div key={idx} className={`flex items-start gap-2 ${
               item.role === 'user' 
-                ? (isBurgundy ? 'text-[#fff8e7]/70' : 'text-slate-400') 
-                : (isBurgundy ? 'text-[#fff8e7]' : 'text-cyan-300')
+                ? (isCosmic ? 'text-[#5e1c28]' : isBurgundy ? 'text-[#fff8e7]/70' : 'text-slate-400') 
+                : (isCosmic ? 'text-red-900 font-medium' : isBurgundy ? 'text-[#fff8e7]' : 'text-cyan-300')
             }`}>
               <span className="font-bold shrink-0">{item.role === 'user' ? 'You:' : 'Assistant:'}</span>
               <span>{item.text}</span>
               {item.tid && (
                 <span className={`ml-auto font-mono text-[9px] px-1 py-0.2 rounded border ${
-                  isBurgundy ? 'bg-red-950 text-[#fff8e7] border-red-800' : 'bg-cyan-950 text-cyan-400 border border-cyan-800'
+                  isCosmic ? 'bg-red-100 text-red-900 border-red-300' : isBurgundy ? 'bg-red-950 text-[#fff8e7] border-red-800' : 'bg-cyan-950 text-cyan-400 border border-cyan-800'
                 }`}>
                   {item.tid}
                 </span>
@@ -405,9 +421,11 @@ export const VoiceAssistantBar: React.FC = () => {
                     ]);
                   }}
                   className={`px-2.5 py-1 text-xs font-medium rounded-full border transition-all cursor-pointer ${
-                    isBurgundy
-                      ? 'bg-red-950/80 hover:bg-red-900 border-red-500/40 text-[#fff8e7]'
-                      : 'bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 hover:text-white'
+                    isCosmic
+                      ? 'bg-red-100 hover:bg-red-200 border-red-300 text-red-900'
+                      : isBurgundy
+                        ? 'bg-red-950/80 hover:bg-red-900 border-red-500/40 text-[#fff8e7]'
+                        : 'bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 hover:text-white'
                   }`}
                 >
                   {chip.label}
@@ -424,7 +442,7 @@ export const VoiceAssistantBar: React.FC = () => {
             handleExecuteVoiceCommand(inputUtterance);
           }}
           className={`flex items-center gap-2 pt-2 border-t ${
-            isBurgundy ? 'border-[#fff8e7]/15' : 'border-slate-800/80'
+            isCosmic ? 'border-red-900/10' : isBurgundy ? 'border-[#fff8e7]/15' : 'border-slate-800/80'
           }`}
         >
           {/* Microphone Button */}
@@ -434,13 +452,15 @@ export const VoiceAssistantBar: React.FC = () => {
             className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
               isListening
                 ? 'bg-rose-600/30 border-rose-500 text-rose-300 animate-pulse'
-                : isBurgundy
-                  ? 'bg-red-950/80 hover:bg-red-900 border-red-500/40 text-[#fff8e7]'
-                  : 'bg-cyan-500/20 hover:bg-cyan-500/30 border-cyan-500/40 text-cyan-300 hover:text-white'
+                : isCosmic
+                  ? 'bg-red-50 hover:bg-red-100 border-red-300 text-red-700'
+                  : isBurgundy
+                    ? 'bg-red-950/80 hover:bg-red-900 border-red-500/40 text-[#fff8e7]'
+                    : 'bg-cyan-500/20 hover:bg-cyan-500/30 border-cyan-500/40 text-cyan-300 hover:text-white'
             }`}
             title={isListening ? 'Stop listening' : 'Start speaking command'}
           >
-            {isListening ? <MicOff className="w-4 h-4 text-rose-400" /> : <Mic className={`w-4 h-4 ${isBurgundy ? 'text-red-400' : 'text-cyan-400'}`} />}
+            {isListening ? <MicOff className="w-4 h-4 text-rose-500" /> : <Mic className={`w-4 h-4 ${isDarkRed ? 'text-red-600' : 'text-cyan-400'}`} />}
           </button>
 
           {/* Text Input Fallback */}
@@ -450,9 +470,11 @@ export const VoiceAssistantBar: React.FC = () => {
             onChange={(e) => setInputUtterance(e.target.value)}
             placeholder={language === 'hi' ? 'बोलें या टाइप करें: "सहमति केंद्र खोलो"...' : 'Speak or type: "Open Data Flow", "Go to Audit Log"...'}
             className={`flex-1 border rounded-xl px-3 py-1.5 text-xs outline-none transition-colors ${
-              isBurgundy
-                ? 'bg-red-950/40 border-red-500/30 focus:border-red-400 text-[#fff8e7] placeholder-[#fff8e7]/40'
-                : 'bg-slate-950/60 border border-slate-700/80 focus:border-cyan-500 text-white placeholder-slate-500'
+              isCosmic
+                ? 'bg-[#fdfaf3] border-red-200 focus:border-red-500 text-[#2b060f] placeholder-red-900/40'
+                : isBurgundy
+                  ? 'bg-red-950/40 border-red-500/30 focus:border-red-400 text-[#fff8e7] placeholder-[#fff8e7]/40'
+                  : 'bg-slate-950/60 border border-slate-700/80 focus:border-cyan-500 text-white placeholder-slate-500'
             }`}
           />
 
@@ -460,8 +482,8 @@ export const VoiceAssistantBar: React.FC = () => {
             type="submit"
             disabled={!inputUtterance.trim()}
             className={`p-2 rounded-xl disabled:opacity-40 transition-colors cursor-pointer ${
-              isBurgundy
-                ? 'bg-red-600 hover:bg-red-500 text-[#fff8e7]'
+              isDarkRed
+                ? 'bg-red-600 hover:bg-red-500 text-white'
                 : 'bg-cyan-600 hover:bg-cyan-500 text-white'
             }`}
             title="Send command"
@@ -472,11 +494,11 @@ export const VoiceAssistantBar: React.FC = () => {
 
         {/* Quick Suggestion Chips */}
         <div className="flex items-center gap-1.5 mt-2 overflow-x-auto text-[11px] no-scrollbar">
-          <span className={`text-[10px] uppercase tracking-wider shrink-0 ${isBurgundy ? 'text-[#fff8e7]/60' : 'text-slate-500'}`}>Try:</span>
+          <span className={`text-[10px] uppercase tracking-wider shrink-0 ${isCosmic ? 'text-[#5e1c28]' : isBurgundy ? 'text-[#fff8e7]/60' : 'text-slate-500'}`}>Try:</span>
           <button
             onClick={() => handleExecuteVoiceCommand('Open Data Flow')}
             className={`px-2 py-0.5 rounded transition-colors shrink-0 cursor-pointer ${
-              isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
+              isCosmic ? 'bg-red-50 hover:bg-red-100 text-red-900 border border-red-200' : isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
             }`}
           >
             "Open Data Flow"
@@ -484,7 +506,7 @@ export const VoiceAssistantBar: React.FC = () => {
           <button
             onClick={() => handleExecuteVoiceCommand('Show high-risk permissions')}
             className={`px-2 py-0.5 rounded transition-colors shrink-0 cursor-pointer ${
-              isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
+              isCosmic ? 'bg-red-50 hover:bg-red-100 text-red-900 border border-red-200' : isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
             }`}
           >
             "Show high-risk permissions"
@@ -492,7 +514,7 @@ export const VoiceAssistantBar: React.FC = () => {
           <button
             onClick={() => handleExecuteVoiceCommand('Open the analytics consent')}
             className={`px-2 py-0.5 rounded transition-colors shrink-0 cursor-pointer ${
-              isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
+              isCosmic ? 'bg-red-50 hover:bg-red-100 text-red-900 border border-red-200' : isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
             }`}
           >
             "Open the analytics consent"
@@ -500,7 +522,7 @@ export const VoiceAssistantBar: React.FC = () => {
           <button
             onClick={() => handleExecuteVoiceCommand('Go back')}
             className={`px-2 py-0.5 rounded transition-colors shrink-0 cursor-pointer ${
-              isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
+              isCosmic ? 'bg-red-50 hover:bg-red-100 text-red-900 border border-red-200' : isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
             }`}
           >
             "Go back"
@@ -511,7 +533,7 @@ export const VoiceAssistantBar: React.FC = () => {
               handleExecuteVoiceCommand('सहमति केंद्र खोलो');
             }}
             className={`px-2 py-0.5 rounded transition-colors shrink-0 cursor-pointer ${
-              isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
+              isCosmic ? 'bg-red-50 hover:bg-red-100 text-red-900 border border-red-200' : isBurgundy ? 'bg-red-950/60 hover:bg-red-900/80 text-[#fff8e7]/85 hover:text-[#fff8e7]' : 'bg-slate-800/70 hover:bg-slate-700 hover:text-cyan-300'
             }`}
           >
             "सहमति केंद्र खोलो"

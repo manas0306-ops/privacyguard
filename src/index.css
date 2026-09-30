@@ -4,47 +4,255 @@
 
 @layer base {
   body {
-    background-color: #180308;
-    color: #fff8e7;
+    background-color: #fff8e7;
+    color: #2b060f;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 
-/* Theme switching overrides */
-body[data-theme="blue"],
-[data-theme="blue"] {
-  background-color: #070b14;
-  color: #e2e8f0;
+/* =============================================================
+   THEME 1: COSMIC LATTE (#fff8e7) - Primary Default Light Canvas
+   Warm Cosmic Latte background, Crisp White/Cream Panels,
+   Deep Imperial Maroon Typography & Vibrant Crimson Accents
+   ============================================================= */
+body[data-theme="cosmic"],
+[data-theme="cosmic"] {
+  background-color: #fff8e7;
+  color: #2b060f;
 }
 
-/* Cyber-grid background in warm Cosmic Latte (#fff8e7) */
-.bg-cyber-grid {
+[data-theme="cosmic"] .bg-cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(185, 28, 28, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(185, 28, 28, 0.045) 1px, transparent 1px);
+}
+
+[data-theme="cosmic"] .glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(185, 28, 28, 0.16);
+  box-shadow: 0 4px 20px -2px rgba(185, 28, 28, 0.06);
+}
+
+[data-theme="cosmic"] .glass-panel-hover:hover {
+  border-color: rgba(220, 38, 38, 0.45);
+  box-shadow: 0 8px 30px -4px rgba(220, 38, 38, 0.14);
+}
+
+/* Surfaces and card panels in Cosmic Latte */
+[data-theme="cosmic"] .bg-slate-900 {
+  background-color: #ffffff;
+}
+[data-theme="cosmic"] .bg-slate-950 {
+  background-color: #fdfaf3;
+}
+[data-theme="cosmic"] .bg-slate-800 {
+  background-color: #faedd0;
+}
+[data-theme="cosmic"] .bg-slate-800\/90,
+[data-theme="cosmic"] .bg-slate-800\/80,
+[data-theme="cosmic"] .bg-slate-800\/60,
+[data-theme="cosmic"] .bg-slate-800\/50,
+[data-theme="cosmic"] .bg-slate-800\/40 {
+  background-color: #fdf6e9;
+}
+
+[data-theme="cosmic"] .border-slate-800,
+[data-theme="cosmic"] .border-slate-800\/80,
+[data-theme="cosmic"] .border-slate-700,
+[data-theme="cosmic"] .border-slate-700\/60 {
+  border-color: rgba(185, 28, 28, 0.15);
+}
+
+/* Typography in Cosmic Latte: Deep Maroon with High Contrast */
+[data-theme="cosmic"] .text-slate-100,
+[data-theme="cosmic"] .text-slate-200 {
+  color: #2b060f;
+}
+[data-theme="cosmic"] .text-slate-300 {
+  color: #3b0813;
+}
+[data-theme="cosmic"] .text-slate-400 {
+  color: #5e1c28;
+}
+[data-theme="cosmic"] .text-slate-500 {
+  color: #882b3d;
+}
+
+/* Accents in Cosmic Latte */
+[data-theme="cosmic"] .text-cyan-400,
+[data-theme="cosmic"] .text-cyan-300,
+[data-theme="cosmic"] .text-blue-400,
+[data-theme="cosmic"] .text-indigo-400 {
+  color: #dc2626;
+}
+
+[data-theme="cosmic"] .bg-cyan-950,
+[data-theme="cosmic"] .bg-cyan-950\/70,
+[data-theme="cosmic"] .bg-cyan-950\/80,
+[data-theme="cosmic"] .bg-cyan-950\/90 {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+[data-theme="cosmic"] .border-cyan-500,
+[data-theme="cosmic"] .border-cyan-500\/30,
+[data-theme="cosmic"] .border-cyan-500\/40,
+[data-theme="cosmic"] .border-blue-500\/30 {
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+[data-theme="cosmic"] .bg-cyan-600,
+[data-theme="cosmic"] .bg-blue-600 {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+[data-theme="cosmic"] .bg-cyan-500\/10,
+[data-theme="cosmic"] .bg-cyan-500\/20,
+[data-theme="cosmic"] .bg-blue-600\/20 {
+  background-color: #fee2e2;
+}
+
+[data-theme="cosmic"] .shadow-glow-sm {
+  box-shadow: 0 4px 14px -1px rgba(220, 38, 38, 0.25);
+}
+
+[data-theme="cosmic"] ::-webkit-scrollbar-track,
+[data-theme="cosmic"] *::-webkit-scrollbar-track {
+  background: #faedd0;
+}
+[data-theme="cosmic"] ::-webkit-scrollbar-thumb,
+[data-theme="cosmic"] *::-webkit-scrollbar-thumb {
+  background: rgba(185, 28, 28, 0.35);
+  border-radius: 9999px;
+}
+[data-theme="cosmic"] ::-webkit-scrollbar-thumb:hover,
+[data-theme="cosmic"] *::-webkit-scrollbar-thumb:hover {
+  background: rgba(220, 38, 38, 0.65);
+}
+
+/* =============================================================
+   THEME 2: BURGUNDY - Dark Velvet Red & Golden Cosmic Latte Canvas
+   Body: #180308 | Panels: Dark Burgundy | Text: Cosmic Latte
+   ============================================================= */
+body[data-theme="burgundy"],
+[data-theme="burgundy"] {
+  background-color: #180308;
+  color: #fff8e7;
+}
+
+[data-theme="burgundy"] .bg-cyber-grid {
   background-size: 40px 40px;
   background-image: 
     linear-gradient(to right, rgba(255, 248, 231, 0.035) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 248, 231, 0.035) 1px, transparent 1px);
 }
 
-[data-theme="blue"] .bg-cyber-grid {
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-}
-
-/* Royal Red & Cosmic Latte Glass panel */
-.glass-panel {
+[data-theme="burgundy"] .glass-panel {
   background: rgba(36, 6, 15, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 248, 231, 0.15);
 }
 
-.glass-panel-hover {
-  transition: all 0.2s ease-in-out;
-}
-.glass-panel-hover:hover {
+[data-theme="burgundy"] .glass-panel-hover:hover {
   border-color: rgba(255, 248, 231, 0.38);
   box-shadow: 0 4px 28px -2px rgba(220, 38, 38, 0.35);
+}
+
+[data-theme="burgundy"] .bg-slate-900 {
+  background-color: rgba(34, 5, 14, 0.9);
+}
+[data-theme="burgundy"] .bg-slate-950 {
+  background-color: rgba(22, 3, 9, 0.96);
+}
+[data-theme="burgundy"] .bg-slate-800 {
+  background-color: rgba(54, 8, 22, 0.78);
+}
+[data-theme="burgundy"] .border-slate-800 {
+  border-color: rgba(255, 248, 231, 0.12);
+}
+[data-theme="burgundy"] .border-slate-700 {
+  border-color: rgba(255, 248, 231, 0.18);
+}
+[data-theme="burgundy"] .text-slate-100,
+[data-theme="burgundy"] .text-slate-200 {
+  color: #fff8e7;
+}
+[data-theme="burgundy"] .text-slate-300 {
+  color: #f7eed7;
+}
+[data-theme="burgundy"] .text-slate-400 {
+  color: #eadfc5;
+}
+[data-theme="burgundy"] .text-slate-500 {
+  color: #bdae93;
+}
+[data-theme="burgundy"] .text-cyan-400,
+[data-theme="burgundy"] .text-cyan-300,
+[data-theme="burgundy"] .text-blue-400,
+[data-theme="burgundy"] .text-indigo-400 {
+  color: #fff8e7;
+}
+[data-theme="burgundy"] .bg-cyan-950,
+[data-theme="burgundy"] .bg-cyan-950\/70,
+[data-theme="burgundy"] .bg-cyan-950\/80,
+[data-theme="burgundy"] .bg-cyan-950\/90 {
+  background-color: rgba(80, 10, 24, 0.9);
+}
+[data-theme="burgundy"] .border-cyan-500,
+[data-theme="burgundy"] .border-cyan-500\/30,
+[data-theme="burgundy"] .border-cyan-500\/40,
+[data-theme="burgundy"] .border-cyan-500\/50,
+[data-theme="burgundy"] .border-cyan-500\/60,
+[data-theme="burgundy"] .border-blue-500\/30,
+[data-theme="burgundy"] .border-blue-500\/40 {
+  border-color: rgba(220, 38, 38, 0.45);
+}
+[data-theme="burgundy"] .bg-cyan-600,
+[data-theme="burgundy"] .bg-blue-600 {
+  background-color: #dc2626;
+  color: #fff8e7;
+}
+[data-theme="burgundy"] .bg-cyan-500\/10,
+[data-theme="burgundy"] .bg-cyan-500\/20,
+[data-theme="burgundy"] .bg-blue-600\/20 {
+  background-color: rgba(220, 38, 38, 0.25);
+}
+[data-theme="burgundy"] .shadow-glow-sm {
+  box-shadow: 0 0 18px -3px rgba(220, 38, 38, 0.4);
+}
+[data-theme="burgundy"] ::-webkit-scrollbar-track,
+[data-theme="burgundy"] *::-webkit-scrollbar-track {
+  background: rgba(22, 3, 9, 0.7);
+}
+[data-theme="burgundy"] ::-webkit-scrollbar-thumb,
+[data-theme="burgundy"] *::-webkit-scrollbar-thumb {
+  background: rgba(185, 28, 28, 0.55);
+  border-radius: 9999px;
+}
+[data-theme="burgundy"] ::-webkit-scrollbar-thumb:hover,
+[data-theme="burgundy"] *::-webkit-scrollbar-thumb:hover {
+  background: rgba(220, 38, 38, 0.85);
+}
+
+/* =============================================================
+   THEME 3: BLUE - Cyber Blue Classic
+   Body: #070b14 | Panels: Slate | Accents: Cyan
+   ============================================================= */
+body[data-theme="blue"],
+[data-theme="blue"] {
+  background-color: #070b14;
+  color: #e2e8f0;
+}
+
+[data-theme="blue"] .bg-cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 [data-theme="blue"] .glass-panel {
@@ -55,119 +263,6 @@ body[data-theme="blue"],
   border-color: rgba(56, 189, 248, 0.3);
   box-shadow: 0 4px 20px -2px rgba(2, 132, 199, 0.15);
 }
-
-/* Default Red, Maroon & Cosmic Latte (#fff8e7) Overrides - Pure Zero Blue */
-body:not([data-theme="blue"]) .bg-slate-900 {
-  background-color: rgba(34, 5, 14, 0.9);
-}
-body:not([data-theme="blue"]) .bg-slate-950 {
-  background-color: rgba(22, 3, 9, 0.96);
-}
-body:not([data-theme="blue"]) .bg-slate-800 {
-  background-color: rgba(54, 8, 22, 0.78);
-}
-body:not([data-theme="blue"]) .border-slate-800 {
-  border-color: rgba(255, 248, 231, 0.12);
-}
-body:not([data-theme="blue"]) .border-slate-700 {
-  border-color: rgba(255, 248, 231, 0.18);
-}
-body:not([data-theme="blue"]) .text-slate-100,
-body:not([data-theme="blue"]) .text-slate-200 {
-  color: #fff8e7;
-}
-body:not([data-theme="blue"]) .text-slate-300 {
-  color: #f7eed7;
-}
-body:not([data-theme="blue"]) .text-slate-400 {
-  color: #eadfc5;
-}
-body:not([data-theme="blue"]) .text-slate-500 {
-  color: #bdae93;
-}
-
-/* Universal Red Overrides for any Residual Cyan/Blue */
-body:not([data-theme="blue"]) .text-cyan-400,
-body:not([data-theme="blue"]) .text-cyan-300,
-body:not([data-theme="blue"]) .text-cyan-200,
-body:not([data-theme="blue"]) .text-blue-400,
-body:not([data-theme="blue"]) .text-indigo-400 {
-  color: #fff8e7;
-}
-body:not([data-theme="blue"]) .bg-cyan-950,
-body:not([data-theme="blue"]) .bg-cyan-950\/70,
-body:not([data-theme="blue"]) .bg-cyan-950\/80,
-body:not([data-theme="blue"]) .bg-cyan-950\/90 {
-  background-color: rgba(80, 10, 24, 0.9);
-}
-body:not([data-theme="blue"]) .border-cyan-500,
-body:not([data-theme="blue"]) .border-cyan-500\/30,
-body:not([data-theme="blue"]) .border-cyan-500\/40,
-body:not([data-theme="blue"]) .border-cyan-500\/50,
-body:not([data-theme="blue"]) .border-cyan-500\/60,
-body:not([data-theme="blue"]) .border-blue-500\/30,
-body:not([data-theme="blue"]) .border-blue-500\/40 {
-  border-color: rgba(220, 38, 38, 0.45);
-}
-body:not([data-theme="blue"]) .bg-cyan-600,
-body:not([data-theme="blue"]) .bg-blue-600 {
-  background-color: #dc2626;
-  color: #fff8e7;
-}
-body:not([data-theme="blue"]) .bg-cyan-500\/10,
-body:not([data-theme="blue"]) .bg-cyan-500\/20,
-body:not([data-theme="blue"]) .bg-blue-600\/20,
-body:not([data-theme="blue"]) .bg-blue-600\/30,
-body:not([data-theme="blue"]) .bg-cyan-600\/30 {
-  background-color: rgba(220, 38, 38, 0.25);
-}
-
-body:not([data-theme="blue"]) .shadow-glow-sm {
-  box-shadow: 0 0 18px -3px rgba(220, 38, 38, 0.4);
-}
-
-body:not([data-theme="blue"]) .from-blue-500,
-body:not([data-theme="blue"]) .from-cyan-400,
-body:not([data-theme="blue"]) .from-cyan-500,
-body:not([data-theme="blue"]) .from-cyan-600 {
-  --tw-gradient-from: #dc2626 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(220 38 38 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-body:not([data-theme="blue"]) .to-cyan-400,
-body:not([data-theme="blue"]) .to-cyan-500,
-body:not([data-theme="blue"]) .to-blue-500,
-body:not([data-theme="blue"]) .to-blue-600 {
-  --tw-gradient-to: #e11d48 var(--tw-gradient-to-position);
-}
-body:not([data-theme="blue"]) .border-cyan-400 {
-  border-color: #dc2626;
-}
-body:not([data-theme="blue"]) .bg-cyan-400 {
-  background-color: #dc2626;
-}
-
-/* Custom scrollbars */
-body:not([data-theme="blue"])::-webkit-scrollbar-track,
-body:not([data-theme="blue"]) *::-webkit-scrollbar-track {
-  background: rgba(22, 3, 9, 0.7);
-}
-body:not([data-theme="blue"])::-webkit-scrollbar-thumb,
-body:not([data-theme="blue"]) *::-webkit-scrollbar-thumb {
-  background: rgba(185, 28, 28, 0.55);
-  border-radius: 9999px;
-}
-body:not([data-theme="blue"])::-webkit-scrollbar-thumb:hover,
-body:not([data-theme="blue"]) *::-webkit-scrollbar-thumb:hover {
-  background: rgba(220, 38, 38, 0.85);
-}
-
-/* Custom scrollbar base dimensions */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
 [data-theme="blue"] ::-webkit-scrollbar-track,
 [data-theme="blue"] *::-webkit-scrollbar-track {
   background: rgba(15, 23, 42, 0.5);
@@ -180,6 +275,29 @@ body:not([data-theme="blue"]) *::-webkit-scrollbar-thumb:hover {
 [data-theme="blue"] ::-webkit-scrollbar-thumb:hover,
 [data-theme="blue"] *::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.6);
+}
+
+/* Custom scrollbar base dimensions */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Form inputs & controls in Cosmic Latte */
+[data-theme="cosmic"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="cosmic"] select,
+[data-theme="cosmic"] textarea {
+  background-color: #ffffff;
+  color: #2b060f;
+  border-color: rgba(185, 28, 28, 0.25);
+}
+
+[data-theme="cosmic"] input:focus,
+[data-theme="cosmic"] select:focus,
+[data-theme="cosmic"] textarea:focus {
+  border-color: #dc2626;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
 }
 
 /* Pulse keyframes for packet animation */

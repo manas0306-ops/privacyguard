@@ -60,9 +60,12 @@ interface PrivacyContextType {
   setIsCopilotOpen: (open: boolean) => void;
   isLandingModalOpen: boolean;
   setIsLandingModalOpen: (open: boolean) => void;
-  currentTheme: 'burgundy' | 'blue';
+  currentTheme: ThemeMode;
   toggleTheme: () => void;
+  setTheme: (theme: ThemeMode) => void;
 }
+
+export type ThemeMode = 'cosmic' | 'burgundy' | 'blue';
 
 const PrivacyContext = createContext<PrivacyContextType | undefined>(undefined);
 
@@ -89,24 +92,36 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return true;
   });
 
-  // Active UI Theme: defaults to 'burgundy' (Maroon, Burgundy & Cream) with instant toggle to 'blue'
-  const [currentTheme, setCurrentTheme] = useState<'burgundy' | 'blue'>(() => {
+  // Active UI Theme: defaults to 'cosmic' (Cosmic Latte #fff8e7 Canvas & Red) with instant toggle
+  const [currentTheme, setCurrentTheme] = useState<ThemeMode>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('privacyguard_theme');
-      if (saved === 'blue' || saved === 'burgundy') return saved;
+      const saved = localStorage.getItem('privacyguard_theme') as ThemeMode;
+      if (saved === 'cosmic' || saved === 'burgundy' || saved === 'blue') return saved;
     }
-    return 'burgundy';
+    return 'cosmic';
   });
 
   const toggleTheme = useCallback(() => {
     setCurrentTheme(prev => {
-      const next = prev === 'burgundy' ? 'blue' : 'burgundy';
+      let next: ThemeMode = 'cosmic';
+      if (prev === 'cosmic') next = 'burgundy';
+      else if (prev === 'burgundy') next = 'blue';
+      else next = 'cosmic';
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('privacyguard_theme', next);
         document.body.setAttribute('data-theme', next);
       }
       return next;
     });
+  }, []);
+
+  const setTheme = useCallback((theme: ThemeMode) => {
+    setCurrentTheme(theme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('privacyguard_theme', theme);
+      document.body.setAttribute('data-theme', theme);
+    }
   }, []);
 
   useEffect(() => {
@@ -441,7 +456,8 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isLandingModalOpen,
         setIsLandingModalOpen,
         currentTheme,
-        toggleTheme
+        toggleTheme,
+        setTheme
       }}
     >
       {children}
