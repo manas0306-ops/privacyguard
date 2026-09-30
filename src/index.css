@@ -61,3 +61,30 @@
 .animate-flow {
   animation: flowPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
+
+/* Golden Mandala Watermark & Sovereign Cyber-Gold Theme */
+@keyframes spinSlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spinReverseSlow {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-spin-very-slow {
+  animation: spinSlow 240s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spinReverseSlow 300s linear infinite;
+}
+
+.gold-glow-text {
+  text-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+}
+
+.gold-glow-border {
+  box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.25);
+}

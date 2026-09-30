@@ -16,6 +16,7 @@ import {
   FileText,
   Activity
 } from 'lucide-react';
+import mandalaWatermark from '../assets/mandala-watermark.png';
 import { usePrivacy } from '../context/PrivacyContext';
 
 export const Header: React.FC = () => {
@@ -71,21 +72,26 @@ export const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo & Mission */}
           <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 via-blue-600/30 to-indigo-600/40 border border-cyan-500/40 shadow-glow-sm">
-              <Shield className="w-5 h-5 text-cyan-400" />
-              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping-slow" />
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 via-yellow-600/30 to-amber-700/40 border border-amber-500/40 shadow-glow-amber overflow-hidden">
+              <img
+                src={mandalaWatermark}
+                alt=""
+                className="absolute inset-0 w-full h-full opacity-35 animate-spin-very-slow pointer-events-none"
+              />
+              <Shield className="w-5 h-5 text-amber-400 relative z-10" />
+              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping-slow" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+                <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-amber-200 via-yellow-100 to-slate-200 bg-clip-text text-transparent">
                   PRIVACYGUARD
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-mono tracking-wider uppercase rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-500/30">
+                <span className="px-2 py-0.5 text-[10px] font-mono tracking-wider uppercase rounded-full bg-amber-950/80 text-amber-300 border border-amber-500/30">
                   FIREWALL MVP
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
-                Your Personal Data. Your Rules.
+                Your Personal Data. <span className="text-amber-400/90">Your Rules.</span>
               </p>
             </div>
           </div>

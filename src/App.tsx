@@ -13,6 +13,7 @@ import { AssetDetailModal } from './components/AssetDetailModal';
 import { PrivacyCopilot } from './components/PrivacyCopilot';
 import { GuidedDemoModal } from './components/GuidedDemoModal';
 import { VoiceAssistantBar } from './voice/ui/VoiceAssistantBar';
+import { WatermarkLayer } from './components/WatermarkLayer';
 import { usePrivacy } from './context/PrivacyContext';
 import { Shield } from 'lucide-react';
 
@@ -39,12 +40,15 @@ export const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="relative min-h-screen bg-[#070b14] text-slate-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
+      {/* Background Sacred Geometry Mandala Watermark & Ambient Gold Glow */}
+      <WatermarkLayer />
+
       {/* Top Navigation & Status Bar */}
       <Header />
 
       {/* Main Page Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 sm:pb-32">
+      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 sm:pb-32">
         {renderActiveTab()}
       </main>
 
@@ -58,18 +62,18 @@ export const AppContent: React.FC = () => {
       <VoiceAssistantBar />
 
       {/* Footer */}
-      <footer className="w-full border-t border-slate-800/80 bg-slate-950/60 py-6 text-xs text-slate-500">
+      <footer className="relative z-10 w-full border-t border-slate-800/80 bg-slate-950/70 backdrop-blur-md py-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-cyan-500" />
-            <span className="font-semibold text-slate-400">PRIVACYGUARD</span>
+            <Shield className="w-4 h-4 text-amber-400" />
+            <span className="font-semibold text-slate-300">PRIVACYGUARD</span>
             <span>—</span>
             <span className="text-slate-400 italic">"Privacy is not a checkbox. It is a continuous control system."</span>
           </div>
           <div className="flex items-center gap-4 font-mono text-[11px] text-slate-400">
             <span>Cybersecurity &amp; Privacy-Preserving Technology</span>
             <span>•</span>
-            <span className="text-cyan-400">Hackathon MVP</span>
+            <span className="text-amber-400 font-semibold">Firewall MVP</span>
           </div>
         </div>
       </footer>
