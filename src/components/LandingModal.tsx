@@ -11,26 +11,17 @@ import {
 import { usePrivacy } from '../context/PrivacyContext';
 
 export const LandingModal: React.FC = () => {
-  const { startTour } = usePrivacy();
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-
-  // Check if previously dismissed in this session
-  useEffect(() => {
-    const hasSeen = sessionStorage.getItem('privacyguard_has_entered');
-    if (hasSeen) {
-      setIsOpen(false);
-    }
-  }, []);
+  const { startTour, isLandingModalOpen, setIsLandingModalOpen } = usePrivacy();
 
   const handleEnter = (withTour: boolean) => {
     sessionStorage.setItem('privacyguard_has_entered', 'true');
-    setIsOpen(false);
+    setIsLandingModalOpen(false);
     if (withTour) {
       startTour();
     }
   };
 
-  if (!isOpen) return null;
+  if (!isLandingModalOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-300">

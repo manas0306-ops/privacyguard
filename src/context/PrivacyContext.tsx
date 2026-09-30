@@ -58,6 +58,8 @@ interface PrivacyContextType {
   setIsScoreModalOpen: (open: boolean) => void;
   isCopilotOpen: boolean;
   setIsCopilotOpen: (open: boolean) => void;
+  isLandingModalOpen: boolean;
+  setIsLandingModalOpen: (open: boolean) => void;
 }
 
 const PrivacyContext = createContext<PrivacyContextType | undefined>(undefined);
@@ -78,6 +80,12 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isErasureModalOpen, setIsErasureModalOpen] = useState<boolean>(false);
   const [isScoreModalOpen, setIsScoreModalOpen] = useState<boolean>(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(false);
+  const [isLandingModalOpen, setIsLandingModalOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('privacyguard_has_entered');
+    }
+    return true;
+  });
 
   // Derive blocked requests count
   const blockedCount = useMemo(() => {
@@ -401,7 +409,9 @@ export const PrivacyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isScoreModalOpen,
         setIsScoreModalOpen,
         isCopilotOpen,
-        setIsCopilotOpen
+        setIsCopilotOpen,
+        isLandingModalOpen,
+        setIsLandingModalOpen
       }}
     >
       {children}

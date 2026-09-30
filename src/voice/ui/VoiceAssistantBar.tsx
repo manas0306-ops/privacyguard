@@ -27,7 +27,9 @@ import {
   Database,
   Share2,
   FileText,
-  ShieldAlert
+  ShieldAlert,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { usePrivacy } from '../../context/PrivacyContext';
 import {
@@ -49,8 +51,10 @@ export const VoiceAssistantBar: React.FC = () => {
     consents,
     dataAssets,
     services,
+    isLandingModalOpen,
   } = usePrivacy();
 
+  const [isMinimized, setIsMinimized] = useState<boolean>(false);
   const [inputUtterance, setInputUtterance] = useState<string>('');
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
   const [speechEnabled, setSpeechEnabled] = useState<boolean>(true);
@@ -252,8 +256,34 @@ export const VoiceAssistantBar: React.FC = () => {
 
   const currentAssistantState = stateMachine.getState();
 
+  // Guard: Do not display Voice Assistant while the initial Landing Modal is active to avoid visual clash
+  if (isLandingModalOpen) {
+    return null;
+  }
+
+  // Minimized Pill view
+  if (isMinimized) {
+    return (
+      <aside aria-label="Voice Assistant Minimized Pill" className="fixed bottom-4 right-4 sm:right-8 z-30 animate-in fade-in duration-200">
+        <button
+          onClick={() => setIsMinimized(false)}
+          className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-800/95 border border-cyan-500/50 hover:border-cyan-400 shadow-2xl text-cyan-300 hover:text-white transition-all cursor-pointer backdrop-blur-md group"
+          title="Open Voice Assistant Bar"
+        >
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+          <Mic className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+          <span className="text-xs font-semibold tracking-wide">Voice Assistant</span>
+          <span className="text-[10px] text-slate-400 font-mono px-1.5 py-0.5 rounded bg-slate-800">
+            {currentAssistantState}
+          </span>
+          <ChevronUp className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-300 transition-colors" />
+        </button>
+      </aside>
+    );
+  }
+
   return (
-    <aside aria-label="Voice Assistant Control Bar" className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-3xl px-4">
+    <aside aria-label="Voice Assistant Control Bar" className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-full max-w-3xl px-4 animate-in fade-in slide-in-from-bottom-2 duration-200">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="mb-2 mx-auto w-fit px-4 py-1.5 rounded-full bg-cyan-950/90 border border-cyan-500/50 text-cyan-200 text-xs font-mono shadow-lg flex items-center gap-2 animate-bounce">
@@ -298,6 +328,15 @@ export const VoiceAssistantBar: React.FC = () => {
               title={speechEnabled ? 'Mute Speech Synthesis' : 'Unmute Speech Synthesis'}
             >
               {speechEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
+            </button>
+
+            {/* Minimize Bar */}
+            <button
+              onClick={() => setIsMinimized(true)}
+              className="p-1 rounded text-slate-400 hover:text-white transition-colors cursor-pointer"
+              title="Minimize Voice Assistant"
+            >
+              <ChevronDown className="w-4 h-4" />
             </button>
           </div>
         </div>
