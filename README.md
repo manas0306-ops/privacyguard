@@ -4,11 +4,14 @@
 > **Hackathon Theme:** Cybersecurity & Privacy-Preserving Technology  
 > **Classification:** Personal Data Firewall & Zero-Trust Telemetry Interception Gateway
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-success?style=for-the-badge&logo=github)](https://manas0306-ops.github.io/privacyguard/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18-cyan)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-6.1-646cff)](https://vitejs.dev/)
+
+👉 **Live 24/7 Production Deployment:** [https://manas0306-ops.github.io/privacyguard/](https://manas0306-ops.github.io/privacyguard/)
 
 ---
 
