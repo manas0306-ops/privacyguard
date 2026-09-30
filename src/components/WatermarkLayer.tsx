@@ -6,6 +6,7 @@ export const WatermarkLayer: React.FC = () => {
   const { currentTheme } = usePrivacy();
   const isCosmic = currentTheme === 'cosmic';
   const isBurgundy = currentTheme === 'burgundy';
+  const isDarkRed = isCosmic || isBurgundy;
 
   return (
     <div
@@ -16,11 +17,9 @@ export const WatermarkLayer: React.FC = () => {
       <div
         className="absolute inset-0 transition-all duration-700"
         style={{
-          background: isCosmic
-            ? 'radial-gradient(circle at 50% 35%, rgba(220, 38, 38, 0.06) 0%, rgba(185, 28, 28, 0.03) 42%, transparent 75%)'
-            : isBurgundy
-              ? 'radial-gradient(circle at 50% 35%, rgba(220, 38, 38, 0.22) 0%, rgba(155, 28, 48, 0.12) 42%, rgba(70, 10, 20, 0.05) 70%, transparent 85%)'
-              : 'radial-gradient(circle at 50% 45%, rgba(6, 182, 212, 0.07) 0%, rgba(37, 99, 235, 0.02) 35%, transparent 70%)',
+          background: isDarkRed
+            ? 'radial-gradient(circle at 50% 35%, rgba(220, 38, 38, 0.22) 0%, rgba(155, 28, 48, 0.12) 42%, rgba(70, 10, 20, 0.05) 70%, transparent 85%)'
+            : 'radial-gradient(circle at 50% 45%, rgba(6, 182, 212, 0.07) 0%, rgba(37, 99, 235, 0.02) 35%, transparent 70%)',
         }}
       />
 
@@ -28,11 +27,9 @@ export const WatermarkLayer: React.FC = () => {
       <div
         className="absolute -top-32 -right-32 w-[650px] h-[650px] rounded-full transition-all duration-700"
         style={{
-          background: isCosmic
-            ? 'radial-gradient(circle, rgba(254, 205, 211, 0.25) 0%, rgba(255, 248, 231, 0.1) 50%, transparent 70%)'
-            : isBurgundy
-              ? 'radial-gradient(circle, rgba(255, 248, 231, 0.08) 0%, rgba(220, 38, 38, 0.05) 45%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(56, 189, 248, 0.04) 0%, transparent 65%)',
+          background: isDarkRed
+            ? 'radial-gradient(circle, rgba(255, 248, 231, 0.08) 0%, rgba(220, 38, 38, 0.05) 45%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(56, 189, 248, 0.04) 0%, transparent 65%)',
         }}
       />
 
@@ -42,11 +39,9 @@ export const WatermarkLayer: React.FC = () => {
           src={mandalaWatermark}
           alt=""
           className={`w-[780px] h-[780px] sm:w-[1000px] sm:h-[1000px] max-w-none animate-spin-very-slow transform-gpu transition-opacity duration-700 ${
-            isCosmic
-              ? 'opacity-[0.065] mix-blend-multiply drop-shadow-[0_0_20px_rgba(185,28,28,0.15)]'
-              : isBurgundy
-                ? 'opacity-[0.07] drop-shadow-[0_0_35px_rgba(255,248,231,0.35)]'
-                : 'opacity-[0.045] drop-shadow-[0_0_25px_rgba(6,182,212,0.2)]'
+            isDarkRed
+              ? 'opacity-[0.075] drop-shadow-[0_0_35px_rgba(255,248,231,0.35)]'
+              : 'opacity-[0.045] drop-shadow-[0_0_25px_rgba(6,182,212,0.2)]'
           }`}
         />
       </div>
@@ -57,11 +52,9 @@ export const WatermarkLayer: React.FC = () => {
           src={mandalaWatermark}
           alt=""
           className={`w-[520px] h-[520px] max-w-none animate-spin-reverse-slow transform-gpu transition-opacity duration-700 ${
-            isCosmic
-              ? 'opacity-[0.045] mix-blend-multiply'
-              : isBurgundy
-                ? 'opacity-[0.04]'
-                : 'opacity-[0.03]'
+            isDarkRed
+              ? 'opacity-[0.045]'
+              : 'opacity-[0.03]'
           }`}
         />
       </div>
