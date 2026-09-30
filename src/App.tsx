@@ -12,6 +12,7 @@ import { PrivacyScoreModal } from './components/PrivacyScoreModal';
 import { AssetDetailModal } from './components/AssetDetailModal';
 import { PrivacyCopilot } from './components/PrivacyCopilot';
 import { GuidedDemoModal } from './components/GuidedDemoModal';
+import { VoiceAssistantBar } from './voice/ui/VoiceAssistantBar';
 import { usePrivacy } from './context/PrivacyContext';
 import { Shield } from 'lucide-react';
 
@@ -54,6 +55,7 @@ export const AppContent: React.FC = () => {
       <AssetDetailModal />
       <PrivacyCopilot />
       <GuidedDemoModal />
+      <VoiceAssistantBar />
 
       {/* Footer */}
       <footer className="w-full border-t border-slate-800/80 bg-slate-950/60 py-6 text-xs text-slate-500">
